@@ -39,10 +39,28 @@ th {
 }
 
 .input-group {
-  display: flex;
-  flex-direction: column;
+  @apply flex flex-col gap-2 w-full;
   label {
-    @apply text-sm;
+    @apply text-sm text-slate-600;
   }
-  gap: 0.5rem;
+  .p-dropdown,
+  .p-icon-field,
+  input,
+  .p-inputnumber,
+  .p-calendar {
+    @apply w-full;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-semibold text-slate-600 mb-4;
+}
+
+h1 {
+  @apply text-3xl;
 }

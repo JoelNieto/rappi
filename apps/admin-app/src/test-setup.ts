@@ -5,4 +5,15 @@ globalThis.ngJest = {
     errorOnUnknownProperties: true,
   },
 };
+
+declare global {
+  interface Window {
+    SUPABASE_URL: string;
+    SUPABASE_KEY: string;
+  }
+}
+
+window.SUPABASE_URL = 'https://yourapp.supabase.co';
+window.SUPABASE_KEY = 'your-public';
+
 import 'jest-preset-angular/setup-jest';

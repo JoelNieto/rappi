@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { ClientsComponent } from './clients.component'; // Import the ClientsComponent class
+import { ClientFormComponent } from './client-form.component';
 import { DashboardStore } from './stores/dashboard.store';
 
-describe('ClientsComponent', () => {
-  let component: ClientsComponent;
-  let fixture: ComponentFixture<ClientsComponent>;
+describe('ClientFormComponent', () => {
+  let component: ClientFormComponent;
+  let fixture: ComponentFixture<ClientFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [DashboardStore, MessageService, provideRouter([])],
-      imports: [ClientsComponent],
+      providers: [DashboardStore, MessageService],
+      imports: [ClientFormComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ClientsComponent);
+    fixture = TestBed.createComponent(ClientFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
