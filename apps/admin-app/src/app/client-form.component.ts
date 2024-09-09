@@ -16,6 +16,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { v4 } from 'uuid';
+import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
@@ -118,7 +119,12 @@ import { DashboardStore } from './stores/dashboard.store';
           severity="secondary"
           type="button"
         />
-        <p-button label="Guardar cambios" icon="pi pi-save" type="submit" />
+        <p-button
+          label="Guardar cambios"
+          icon="pi pi-save"
+          type="submit"
+          [loading]="store.loading()"
+        />
       </div>
     </form> `,
   styles: ``,
@@ -126,7 +132,7 @@ import { DashboardStore } from './stores/dashboard.store';
 })
 export class ClientFormComponent implements OnInit {
   public clientId = input<string>();
-  private store = inject(DashboardStore);
+  protected store = inject(DashboardStore);
   private messageService = inject(MessageService);
 
   form = new FormGroup({
@@ -180,7 +186,7 @@ export class ClientFormComponent implements OnInit {
   saveChanges() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.form.markAsDirty();
+      markGroupAsDirty(this.form);
       this.messageService.add({
         severity: 'error',
         summary: 'Error',

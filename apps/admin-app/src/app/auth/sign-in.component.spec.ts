@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MessageService } from 'primeng/api';
-import { SignInComponent } from './sign-in.component';
+import SignInComponent from './sign-in.component'; // Import the SignInComponent class
 
 describe('SignInComponent', () => {
   let component: SignInComponent;

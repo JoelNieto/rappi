@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ClientsComponent } from './clients.component'; // Import the ClientsComponent class
 import { DashboardStore } from './stores/dashboard.store';
 
@@ -10,7 +10,12 @@ describe('ClientsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [DashboardStore, MessageService, provideRouter([])],
+      providers: [
+        DashboardStore,
+        MessageService,
+        ConfirmationService,
+        provideRouter([]),
+      ],
       imports: [ClientsComponent],
     }).compileComponents();
 

@@ -21,7 +21,8 @@
       "@rappi/models": [
         "libs/models/src/index.ts"
       ]
-    }
+    },
+    "resolveJsonModule": true
   },
   "exclude": [
     "node_modules",

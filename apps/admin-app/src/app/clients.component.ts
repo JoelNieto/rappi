@@ -29,7 +29,12 @@ import { DashboardStore } from './stores/dashboard.store';
         routerLink="new"
       />
     </div>
-    <p-table [value]="store.clients()" [paginator]="true" [rows]="10">
+    <p-table
+      [value]="store.clients()"
+      [paginator]="true"
+      [rows]="10"
+      styleClass="p-datatable-striped"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th>Nombre</th>
@@ -45,17 +50,26 @@ import { DashboardStore } from './stores/dashboard.store';
           <td>{{ client.first_name }} {{ client.last_name }}</td>
           <td>{{ client.email }}</td>
           <td>{{ client.phone_number }}</td>
-          <td>{{ client.salary | currency }}</td>
+          <td>{{ client.salary | currency: '$' }}</td>
           <td>{{ client.created_at | date: 'medium' }}</td>
-          <td class="flex gap-2">
-            <p-button
-              text
-              rounded
-              severity="success"
-              icon="pi pi-pencil"
-              [routerLink]="client.id"
-            />
-            <p-button text rounded severity="danger" icon="pi pi-trash" />
+          <td>
+            <div class="flex gap-2">
+              <p-button
+                text
+                rounded
+                outlined
+                severity="success"
+                icon="pi pi-pencil"
+                [routerLink]="client.id"
+              />
+              <p-button
+                text
+                rounded
+                outlined
+                severity="danger"
+                icon="pi pi-trash"
+              />
+            </div>
           </td>
         </tr>
       </ng-template>

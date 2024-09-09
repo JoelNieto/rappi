@@ -5,7 +5,7 @@ import { AuthStore } from './stores/auth.store';
 export const authGuardFn: CanActivateFn = async () => {
   const auth = inject(AuthStore);
   const router = inject(Router);
-  await sleep(1000);
+  await sleep(1500);
 
   return auth.isSignedIn() || router.createUrlTree(['/auth']);
 };

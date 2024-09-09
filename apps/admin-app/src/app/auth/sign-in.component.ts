@@ -36,7 +36,7 @@ import { SupabaseService } from '../services/supabase.service';
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SignInComponent {
+export default class SignInComponent {
   private supabase = inject(SupabaseService);
   private message = inject(MessageService);
   public emailControl = new FormControl('', {

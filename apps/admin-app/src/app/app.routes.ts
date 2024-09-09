@@ -4,8 +4,7 @@ import { authGuardFn } from './auth.guard';
 export const appRoutes: Route[] = [
   {
     path: 'auth',
-    loadComponent: () =>
-      import('./auth/sign-in.component').then((m) => m.SignInComponent),
+    loadComponent: () => import('./auth/sign-in.component'),
   },
   {
     path: '',
@@ -39,9 +38,16 @@ export const appRoutes: Route[] = [
           import('./loans.component').then((m) => m.LoansComponent),
       },
       {
-        path: 'requests',
+        path: 'loans/new',
         loadComponent: () =>
-          import('./requests.component').then((m) => m.RequestsComponent),
+          import('./loan-form.component').then((m) => m.LoanFormComponent),
+      },
+      {
+        path: 'loans/:loanId',
+        loadComponent: () =>
+          import('./loan-details.component').then(
+            (x) => x.LoanDetailsComponent,
+          ),
       },
       {
         path: 'profile',

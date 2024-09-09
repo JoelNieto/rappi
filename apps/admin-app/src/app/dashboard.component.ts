@@ -1,5 +1,10 @@
-import { AsyncPipe, JsonPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { AsyncPipe, JsonPipe, NgClass } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -19,15 +24,20 @@ import { DashboardStore } from './stores/dashboard.store';
     JsonPipe,
     AsyncPipe,
     ButtonModule,
+    NgClass,
   ],
   template: `
     <nav
       class="bg-white border border-b-slate-200 flex fixed z-30 w-full items-center justify-between px-4 py-3"
     >
       <div class="flex items-center gap-4">
-        <button class="p-2 text-slate-500">
-          <span class="pi pi-bars"></span>
-        </button>
+        <p-button
+          icon="pi pi-bars"
+          rounded
+          text
+          severity="secondary"
+          (onClick)="toggleMenu()"
+        />
         <a class="text-2xl font-semibold text-slate-600 mb-0">Rappi</a>
       </div>
       <div>
@@ -43,7 +53,9 @@ import { DashboardStore } from './stores/dashboard.store';
     <div class="flex h-screen pt-16 overflow-hidden">
       <!-- Sidebar -->
       <aside
-        class="flex fixed flex-col pt-4 w-64 h-full bg-white border-r border-slate-200"
+        class="flex fixed flex-col pt-4 h-full bg-white border-r border-slate-200"
+        [class.w-16]="collapsed()"
+        [class.w-64]="!collapsed()"
       >
         <div class="flex flex-col justify-between">
           <div>
@@ -53,51 +65,60 @@ import { DashboardStore } from './stores/dashboard.store';
                   routerLink="home"
                   routerLinkActive="selected"
                   class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
-                  ><span class="pi pi-home"></span> Inicio</a
-                >
+                  [ngClass]="{ 'px-0 justify-center': collapsed() }"
+                  ><span class="pi pi-home"></span>
+                  <span [class.hidden]="collapsed()"> Inicio </span>
+                </a>
               </li>
               <li>
                 <a
                   routerLink="clients"
                   routerLinkActive="selected"
                   class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
-                  ><span class="pi pi-users"></span>Clientes</a
-                >
+                  [ngClass]="{ 'px-0 justify-center': collapsed() }"
+                  ><span class="pi pi-users"></span>
+                  <span [class.hidden]="collapsed()"> Clientes </span>
+                </a>
               </li>
               <li>
                 <a
                   routerLink="loans"
                   routerLinkActive="selected"
                   class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
-                  ><span class="pi pi-money-bill"></span>Prestamos</a
-                >
+                  [ngClass]="{ 'px-0 justify-center': collapsed() }"
+                  ><span class="pi pi-money-bill"></span>
+                  <span [class.hidden]="collapsed()">Prestamos</span>
+                </a>
               </li>
             </ul>
           </div>
         </div>
       </aside>
-
-      <!-- Main content -->
-      <main class="ms-64 overflow-auto relative w-full p-4 h-full">
-        <!-- Main content body -->
-
+      <main
+        class="overflow-auto relative w-full p-4 h-full"
+        [class.ms-16]="collapsed()"
+        [class.ms-64]="!collapsed()"
+      >
         <router-outlet />
       </main>
     </div>
   `,
   styles: `
     .selected {
-      @apply text-blue-800 font-semibold;
+      @apply text-blue-700 font-semibold;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
   public supabase = inject(SupabaseService);
-  menuItems: MenuItem[] = [
+  protected collapsed = signal(false);
+  protected menuItems: MenuItem[] = [
     {
       label: 'Ajustes',
       items: [{ label: 'Perfil', icon: 'pi pi-user', routerLink: 'profile' }],
     },
   ];
+
+  protected toggleMenu = () => this.collapsed.update((x) => !x);
 }

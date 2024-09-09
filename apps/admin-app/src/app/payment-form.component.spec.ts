@@ -1,25 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { LoansComponent } from './loans.component';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { PaymentFormComponent } from './payment-form.component';
 import { DashboardStore } from './stores/dashboard.store';
 
-describe('LoansComponent', () => {
-  let component: LoansComponent;
-  let fixture: ComponentFixture<LoansComponent>;
+describe('PaymentFormComponent', () => {
+  let component: PaymentFormComponent;
+  let fixture: ComponentFixture<PaymentFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       providers: [
-        provideRouter([]),
+        MessageService,
         DashboardStore,
         ConfirmationService,
-        MessageService,
+        DynamicDialogRef,
+        { provide: DynamicDialogConfig, useValue: { data: {} } },
       ],
-      imports: [LoansComponent],
+      imports: [PaymentFormComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(LoansComponent);
+    fixture = TestBed.createComponent(PaymentFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
