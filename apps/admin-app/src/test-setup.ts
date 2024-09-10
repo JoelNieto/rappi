@@ -8,12 +8,11 @@ globalThis.ngJest = {
 
 declare global {
   interface Window {
-    SUPABASE_URL: string;
-    SUPABASE_KEY: string;
+    process: { env: { SUPABASE_URL: string; SUPABASE_KEY: string } };
   }
 }
 
-window.SUPABASE_URL = 'https://yourapp.supabase.co';
-window.SUPABASE_KEY = 'your-public';
+window.process.env.SUPABASE_URL = 'https://yourapp.supabase.co';
+window.process.env.SUPABASE_KEY = 'your-public';
 
 import 'jest-preset-angular/setup-jest';

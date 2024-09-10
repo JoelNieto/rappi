@@ -10,7 +10,7 @@
 @import 'tailwindcss/variants.css' layer(tw-variants);
 
 @layer tw-base {
-  body :not(.p-overlay):not(.p-datepicker) {
+  body :not(.p-overlay):not(.p-datepicker):not(.p-menu-overlay) {
     @apply transition-all duration-300 ease-in-out;
   }
 

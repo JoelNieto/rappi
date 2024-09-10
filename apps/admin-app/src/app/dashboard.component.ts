@@ -10,6 +10,7 @@ import { MenuItem } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { MenuModule } from 'primeng/menu';
 import { SupabaseService } from './services/supabase.service';
+import { AuthStore } from './stores/auth.store';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
@@ -45,6 +46,7 @@ import { DashboardStore } from './stores/dashboard.store';
         <p-button
           icon="pi pi-user"
           text
+          [label]="auth.user() ? auth.user()?.full_name : 'Usuario'"
           rounded
           (onClick)="menu.toggle($event)"
         />
@@ -112,6 +114,7 @@ import { DashboardStore } from './stores/dashboard.store';
 })
 export class DashboardComponent {
   public supabase = inject(SupabaseService);
+  protected auth = inject(AuthStore);
   protected collapsed = signal(false);
   protected menuItems: MenuItem[] = [
     {

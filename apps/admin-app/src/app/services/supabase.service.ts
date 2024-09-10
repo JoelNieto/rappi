@@ -12,7 +12,10 @@ import {
 export class SupabaseService {
   public client: SupabaseClient;
   constructor() {
-    this.client = new SupabaseClient(SUPABASE_URL ?? '', SUPABASE_KEY ?? '');
+    this.client = new SupabaseClient(
+      process.env['SUPABASE_URL'] ?? '',
+      process.env['SUPABASE_KEY'] ?? '',
+    );
   }
 
   private _session: AuthSession | null = null;
@@ -41,6 +44,11 @@ export class SupabaseService {
     return data;
   }
 
+  updateProfile(user: Partial<Profile>) {
+    const update = { ...user, updated_at: new Date() };
+    return this.client.from('profiles').upsert(update).single();
+  }
+
   authChanges(
     callback: (event: AuthChangeEvent, session: Session | null) => void,
   ) {
@@ -50,7 +58,7 @@ export class SupabaseService {
   signIn(email: string) {
     return this.client.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: REDIRECT_URI },
+      options: { emailRedirectTo: process.env['REDIRECT_URI'] },
     });
   }
 }

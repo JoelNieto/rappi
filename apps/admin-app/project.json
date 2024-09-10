@@ -11,10 +11,10 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "define": {
-          "REDIRECT_URI": "'http://localhost:4200'",
-          "SUPABASE_URL": "'https://hnhtwylrsesfnfxdugox.supabase.co'",
-          "SUPABASE_KEY": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuaHR3eWxyc2VzZm5meGR1Z294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQxMTQxMTcsImV4cCI6MjAzOTY5MDExN30.NcAmCa_UPADzh4DaBuYMgi_n9Ah0yovSt1rr1epszYw'",
-          "SUPABASE_SECRET_KEY": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuaHR3eWxyc2VzZm5meGR1Z294Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNDExNDExNywiZXhwIjoyMDM5NjkwMTE3fQ.6XfixjnMG-09FABBV3P-U_pcqMO1Loun3qpupYTZL2A'"
+          "process.env.REDIRECT_URI": "'http://localhost:4200'",
+          "process.env.SUPABASE_URL": "'https://hnhtwylrsesfnfxdugox.supabase.co'",
+          "process.env.SUPABASE_KEY": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuaHR3eWxyc2VzZm5meGR1Z294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQxMTQxMTcsImV4cCI6MjAzOTY5MDExN30.NcAmCa_UPADzh4DaBuYMgi_n9Ah0yovSt1rr1epszYw'",
+          "process.env.SUPABASE_SECRET_KEY": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuaHR3eWxyc2VzZm5meGR1Z294Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNDExNDExNywiZXhwIjoyMDM5NjkwMTE3fQ.6XfixjnMG-09FABBV3P-U_pcqMO1Loun3qpupYTZL2A'"
         },
         "outputPath": "dist/apps/admin-app",
         "index": "apps/admin-app/src/index.html",

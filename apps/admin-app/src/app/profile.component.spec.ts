@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MessageService } from 'primeng/api';
 import { ProfileComponent } from './profile.component';
 
 describe('ProfileComponent', () => {
@@ -7,7 +8,8 @@ describe('ProfileComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ProfileComponent]
+      providers: [MessageService],
+      imports: [ProfileComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProfileComponent);
