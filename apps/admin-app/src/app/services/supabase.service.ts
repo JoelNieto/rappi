@@ -61,4 +61,8 @@ export class SupabaseService {
       options: { emailRedirectTo: process.env['REDIRECT_URI'] },
     });
   }
+
+  signOut() {
+    return this.client.auth.signOut();
+  }
 }

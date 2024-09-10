@@ -24,6 +24,11 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           {
+            "glob": "_redirects",
+            "input": "apps/admin-app/src",
+            "output": "/"
+          },
+          {
             "glob": "**/*",
             "input": "apps/admin-app/public"
           }

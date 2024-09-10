@@ -11,7 +11,7 @@ import { SupabaseService } from '../services/supabase.service';
   imports: [CardModule, InputTextModule, ButtonModule, ReactiveFormsModule],
   template: ` <div class="h-svh flex justify-center items-center">
     <p-card
-      class="w-1/3"
+      class=" w-full md:w-1/3 px-8"
       header="Rappi Presta Admin"
       subheader="Iniciar sesion"
     >
