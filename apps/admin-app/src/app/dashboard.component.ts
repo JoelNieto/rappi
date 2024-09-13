@@ -97,7 +97,7 @@ import { DashboardStore } from './stores/dashboard.store';
         </div>
       </aside>
       <main
-        class="overflow-auto relative w-full p-4 h-full"
+        class="overflow-auto relative w-full p-4 h-full bg-slate-50"
         [class.ms-16]="collapsed()"
         [class.ms-64]="!collapsed()"
       >

@@ -9,61 +9,70 @@
 @import 'tailwindcss/utilities.css' layer(tw-utilities);
 @import 'tailwindcss/variants.css' layer(tw-variants);
 
-@layer tw-base {
-  body :not(.p-overlay):not(.p-datepicker):not(.p-menu-overlay) {
-    @apply transition-all duration-300 ease-in-out;
-  }
-
-  html,
-  body {
-    height: 100%;
-  }
-
-  body {
-    margin: 0;
-  }
-
-  td,
-  th {
-    white-space: nowrap;
-  }
-
-  .p-card .p-card-body {
-    row-gap: 0.15rem;
-  }
-
-  .input-group {
-    @apply flex flex-col gap-2 w-full;
-    label {
-      @apply text-sm text-slate-600;
-    }
-    .p-dropdown,
-    .p-icon-field,
-    input,
-    .p-inputnumber,
-    .p-calendar {
-      @apply w-full;
-    }
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-semibold text-slate-600 mb-4;
-  }
-
-  h1 {
-    @apply text-3xl;
-  }
-}
-
 @layer tw-components {
   // tailwind component classes here
 }
 
 @layer tw-utilities {
   // tailwind utitlity classes here
+}
+
+@layer tw-base {
+}
+
+body :not(.p-overlay):not(.p-datepicker):not(.p-menu-overlay) {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+td,
+th {
+  white-space: nowrap;
+}
+
+.p-card .p-card-body {
+  row-gap: 0.15rem;
+}
+
+.input-group {
+  @apply flex flex-col gap-2 w-full;
+  label {
+    @apply text-sm text-slate-600;
+  }
+  .p-dropdown,
+  .p-icon-field,
+  input,
+  .p-inputnumber,
+  .p-calendar {
+    @apply w-full;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-semibold text-slate-600 mb-4;
+}
+
+h1 {
+  @apply text-3xl;
+}
+
+.p-card {
+  @apply shadow-none border border-slate-200;
+}
+
+.p-card .p-card-title {
+  @apply font-normal text-slate-500;
 }

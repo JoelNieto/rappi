@@ -95,6 +95,69 @@ export const DashboardStore = signalStore(
         return data;
       }
 
+      async function updateClient(request: Client) {
+        patchState(state, { loading: true });
+        const { error } = await supabase.client.from('clients').upsert(request);
+        if (error) {
+          console.error(error);
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Ocurrió un error al actualizar el cliente',
+          });
+          patchState(state, { loading: false });
+          throw error;
+        }
+        toast.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Cliente actualizado correctamente',
+        });
+        patchState(state, {
+          clients: state
+            .clients()
+            .map((client) => (client.id === request.id ? request : client)),
+          loading: false,
+        });
+      }
+
+      async function deleteClient(id: string) {
+        patchState(state, { loading: true });
+        confirmationService.confirm({
+          message: '¿Está seguro de eliminar este cliente?',
+          header: 'Confirmación',
+          icon: 'pi pi-exclamation-triangle',
+          rejectButtonStyleClass: 'p-button-text',
+          acceptLabel: 'Sí',
+          reject: () => patchState(state, { loading: false }),
+          accept: async () => {
+            const { error } = await supabase.client
+              .from('clients')
+              .delete()
+              .eq('id', id);
+            if (error) {
+              console.error(error);
+              toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Ocurrió un error al eliminar el cliente',
+              });
+              patchState(state, { loading: false });
+              throw error;
+            }
+            toast.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Cliente eliminado correctamente',
+            });
+            patchState(state, {
+              clients: state.clients().filter((client) => client.id !== id),
+              loading: false,
+            });
+          },
+        });
+      }
+
       async function createLoan(request: Partial<Loan>) {
         patchState(state, { loading: true });
         try {
@@ -123,6 +186,7 @@ export const DashboardStore = signalStore(
             summary: 'Éxito',
             detail: 'Préstamo creado correctamente',
           });
+          return data;
         } catch (err) {
           console.error(err);
           toast.add({
@@ -286,11 +350,13 @@ export const DashboardStore = signalStore(
         fetchClients,
         fetchLoans,
         createClient,
+        deleteClient,
         createLoan,
         getLoanById,
         setCurrentLoan,
         deleteLoan,
         applyPayment,
+        updateClient,
       };
     },
   ),

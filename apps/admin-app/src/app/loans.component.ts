@@ -14,7 +14,7 @@ import { DashboardStore } from './stores/dashboard.store';
   selector: 'app-loans',
   standalone: true,
   imports: [ButtonModule, TableModule, RouterLink, DatePipe, CurrencyPipe],
-  template: `<div class="flex items-center justify-between">
+  template: `<div class="flex items-center justify-between ">
       <h1>Prestamos</h1>
 
       <p-button
@@ -47,7 +47,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <td>{{ loan.id }}</td>
           <td>{{ loan.product }}</td>
           <td>{{ loan.commerce }}</td>
-          <td>{{ loan.client.first_name }} {{ loan.client.last_name }}</td>
+          <td>{{ loan.client?.first_name }} {{ loan.client?.last_name }}</td>
           <td>{{ loan.created_at | date: 'dd/MM/yyyy' }}</td>
           <td>{{ loan.status_id }}</td>
           <td>{{ loan.price_base | currency: '$' }}</td>

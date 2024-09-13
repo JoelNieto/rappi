@@ -31,7 +31,7 @@ import { AuthStore } from './stores/auth.store';
         class="p-button-rounded"
       />
     </div>
-    <div class="grid grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
       <div class="input-group">
         <label for="full_name">Nombre completo</label>
         <input pInputText formControlName="full_name" id="full_name" />
@@ -88,13 +88,14 @@ export class ProfileComponent implements OnInit {
     }
     this.auth
       .updateProfile(this.form.getRawValue())
-      .then(() =>
+      .then(() => {
         this.messageService.add({
           severity: 'success',
           summary: 'Perfil actualizado',
           detail: 'El perfil se actualizó correctamente',
-        }),
-      )
+        });
+        this.form.markAsPristine();
+      })
       .catch(() =>
         this.messageService.add({
           severity: 'error',

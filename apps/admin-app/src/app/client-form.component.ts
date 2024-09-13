@@ -11,7 +11,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -118,6 +119,7 @@ import { DashboardStore } from './stores/dashboard.store';
           icon="pi pi-times"
           severity="secondary"
           type="button"
+          (onClick)="cancel()"
         />
         <p-button
           label="Guardar cambios"
@@ -134,6 +136,8 @@ export class ClientFormComponent implements OnInit {
   public clientId = input<string>();
   protected store = inject(DashboardStore);
   private messageService = inject(MessageService);
+  private router = inject(Router);
+  private confirmationService = inject(ConfirmationService);
 
   form = new FormGroup({
     id: new FormControl(v4(), { nonNullable: true }),
@@ -184,6 +188,14 @@ export class ClientFormComponent implements OnInit {
   }
 
   saveChanges() {
+    if (this.form.pristine) {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Info',
+        detail: 'No hay cambios para guardar',
+      });
+      return;
+    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       markGroupAsDirty(this.form);
@@ -195,8 +207,28 @@ export class ClientFormComponent implements OnInit {
 
       return;
     }
-    this.store.createClient(this.form.value).then((value) => {
+    if (this.clientId()) {
+      this.store.updateClient(this.form.getRawValue()).then((value) => {
+        console.log('Client updated', value);
+      });
+      return;
+    }
+    this.store.createClient(this.form.getRawValue()).then((value) => {
       console.log('Client created', value);
+    });
+  }
+
+  cancel() {
+    if (this.form.pristine) {
+      this.router.navigate(['/clients']);
+      return;
+    }
+    this.confirmationService.confirm({
+      header: 'Confirmación',
+      message: 'Tienes cambios sin guardar, ¿Estás seguro de cancelar?',
+      accept: () => {
+        this.router.navigate(['/clients']);
+      },
     });
   }
 }

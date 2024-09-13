@@ -16,6 +16,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Installment, Recurrence } from '@rappi/models';
 import { addDays, addMonths, subDays } from 'date-fns';
 import { toDate } from 'date-fns-tz';
@@ -270,6 +271,7 @@ export class LoanFormComponent implements OnInit {
 
   totalAmount = computed(() => this.priceBase() * (1 + this.rate() / 100));
   private injector = inject(Injector);
+  private router = inject(Router);
   protected projectedInstallments = signal<Installment[]>([]);
 
   ngOnInit() {
@@ -329,6 +331,8 @@ export class LoanFormComponent implements OnInit {
       installments: this.projectedInstallments(),
     };
 
-    this.store.createLoan(request);
+    this.store.createLoan(request).then((data) => {
+      this.router.navigate(['/loans', data.id]);
+    });
   }
 }

@@ -2,6 +2,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
@@ -18,8 +19,10 @@ import { DashboardStore } from './stores/dashboard.store';
     CurrencyPipe,
     DatePipe,
     RouterLink,
+    CardModule,
   ],
-  template: `<div class="flex items-center justify-between">
+  template: `<p-card>
+    <div class="flex items-center justify-between">
       <h1>Clientes</h1>
 
       <p-button
@@ -68,15 +71,17 @@ import { DashboardStore } from './stores/dashboard.store';
                 outlined
                 severity="danger"
                 icon="pi pi-trash"
+                (onClick)="store.deleteClient(client.id)"
               />
             </div>
           </td>
         </tr>
       </ng-template>
-    </p-table> `,
+    </p-table>
+  </p-card> `,
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientsComponent {
-  public store = inject(DashboardStore);
+  protected store = inject(DashboardStore);
 }

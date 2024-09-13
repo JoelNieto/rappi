@@ -9,8 +9,14 @@ import {
   OnInit,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Installment, InstallmentStatus, PaymentMethod } from '@rappi/models';
+import {
+  Installment,
+  InstallmentStatus,
+  Payment,
+  PaymentMethod,
+} from '@rappi/models';
 import { isBefore } from 'date-fns';
+import jsPDF from 'jspdf';
 import { ButtonModule } from 'primeng/button';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -105,6 +111,7 @@ import { DashboardStore } from './stores/dashboard.store';
                     <th>Monto</th>
                     <th>Referencia</th>
                     <th>Metodo de pago</th>
+                    <th></th>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-payment>
@@ -113,6 +120,14 @@ import { DashboardStore } from './stores/dashboard.store';
                     <td>{{ payment.amount | currency: '$' }}</td>
                     <td>{{ payment.reference }}</td>
                     <td>{{ payment.payment_method }}</td>
+                    <td>
+                      <p-button
+                        text
+                        icon="pi pi-print"
+                        rounded
+                        (onClick)="generatePaymentReceipt(payment)"
+                      />
+                    </td>
                   </tr>
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
@@ -222,5 +237,19 @@ export class LoanDetailsComponent implements OnInit, OnDestroy {
     if (this.ref) {
       this.ref.close();
     }
+  }
+
+  generatePaymentReceipt(payment: Payment) {
+    const doc = new jsPDF();
+    doc.setFont('Helvetica');
+    doc.setFontSize(24);
+    doc.text('Rappi Presta', 10, 10);
+    doc.setFontSize(12);
+    doc.text('Recibo de pago', 10, 20);
+    doc.text(`Fecha de pago: ${payment.payment_date}`, 10, 20);
+    doc.text(`Monto: ${payment.amount}`, 10, 30);
+    doc.text(`Referencia: ${payment.reference}`, 10, 40);
+    doc.text(`Metodo de pago: ${payment.payment_method}`, 10, 50);
+    doc.save('recibo-de-pago.pdf');
   }
 }

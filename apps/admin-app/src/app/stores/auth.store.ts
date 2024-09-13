@@ -30,7 +30,7 @@ export const AuthStore = signalStore(
     },
     async updateProfile(profile: Profile) {
       patchState(state, { loading: true });
-      const { data, error } = await supabase.updateProfile(profile);
+      const { error } = await supabase.updateProfile(profile);
       if (error) {
         console.error(error);
 
