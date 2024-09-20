@@ -119,7 +119,20 @@ export class DashboardComponent {
   protected menuItems: MenuItem[] = [
     {
       label: 'Ajustes',
-      items: [{ label: 'Perfil', icon: 'pi pi-user', routerLink: 'profile' }],
+      items: [
+        { label: 'Perfil', icon: 'pi pi-user', routerLink: 'profile' },
+        {
+          label: 'Usuarios',
+          icon: 'pi pi-users',
+          routerLink: 'users',
+          visible: this.auth.isAdmin(),
+        },
+        {
+          label: 'Cerrar sesión',
+          icon: 'pi pi-sign-out',
+          command: () => this.auth.signOut(),
+        },
+      ],
     },
   ];
 

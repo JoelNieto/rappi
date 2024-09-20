@@ -14,39 +14,67 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
 import { markGroupAsDirty } from './services/utils';
 import { AuthStore } from './stores/auth.store';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ReactiveFormsModule, CardModule, InputTextModule, ButtonModule],
-  template: ` <form [formGroup]="form" (ngSubmit)="saveChanges()">
-    <div class="flex justify-between">
-      <h1>Ajustes de perfil</h1>
-      <p-button
-        label="Guardar"
-        type="submit"
-        icon="pi pi-save"
-        class="p-button-rounded"
-      />
-    </div>
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
-      <div class="input-group">
-        <label for="full_name">Nombre completo</label>
-        <input pInputText formControlName="full_name" id="full_name" />
+  imports: [
+    ReactiveFormsModule,
+    CardModule,
+    InputTextModule,
+    ButtonModule,
+    PasswordModule,
+  ],
+  template: `
+    <form [formGroup]="form" (ngSubmit)="saveChanges()" class="mb-4">
+      <p-card
+        header=" Ajustes de perfil"
+        subheader="Actualice su informacion personal"
+      >
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+          <div class="input-group">
+            <label for="full_name">Nombre completo</label>
+            <input pInputText formControlName="full_name" id="full_name" />
+          </div>
+          <div class="input-group">
+            <label for="username">Email</label>
+            <input
+              pInputText
+              type="email"
+              formControlName="username"
+              id="username"
+            />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2">
+          <p-button label="Guardar" type="submit" icon="pi pi-save" />
+        </div>
+      </p-card>
+    </form>
+    <p-card header="Cambiar contraseña">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div class="input-group">
+          <label for="password">Nueva contraseña</label>
+          <p-password
+            [formControl]="passwordControl"
+            showTransitionOptions
+            showClear
+            toggleMask
+          />
+        </div>
       </div>
-      <div class="input-group">
-        <label for="username">Email</label>
-        <input
-          pInputText
-          type="email"
-          formControlName="username"
-          id="username"
+      <div class="flex justify-end gap-2">
+        <p-button
+          label="Guardar"
+          icon="pi pi-save"
+          (onClick)="changePassword()"
         />
       </div>
-    </div>
-  </form>`,
+    </p-card>
+  `,
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -66,6 +94,12 @@ export class ProfileComponent implements OnInit {
     }),
     avatar_url: new FormControl('', { nonNullable: true }),
   });
+
+  passwordControl = new FormControl('', {
+    validators: [Validators.required, Validators.minLength(6)],
+    nonNullable: true,
+  });
+
   async ngOnInit(): Promise<void> {
     const user = this.auth.user();
     if (!user) return;
@@ -101,6 +135,34 @@ export class ProfileComponent implements OnInit {
           severity: 'error',
           summary: 'Error',
           detail: 'No se pudo actualizar el perfil',
+        }),
+      );
+  }
+
+  changePassword() {
+    if (this.passwordControl.invalid) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'La contraseña debe tener al menos 6 caracteres',
+      });
+      return;
+    }
+    this.auth
+      .changePassword(this.passwordControl.getRawValue())
+      .then(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Contraseña actualizada',
+          detail: 'La contraseña se actualizó correctamente',
+        });
+        this.passwordControl.reset();
+      })
+      .catch(() =>
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo actualizar la contraseña',
         }),
       );
   }

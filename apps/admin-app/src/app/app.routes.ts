@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { authGuardFn } from './auth.guard';
+import { adminGuardFn, authGuardFn } from './auth.guard';
 
 export const appRoutes: Route[] = [
   {
@@ -53,6 +53,19 @@ export const appRoutes: Route[] = [
         path: 'profile',
         loadComponent: () =>
           import('./profile.component').then((m) => m.ProfileComponent),
+      },
+      {
+        path: 'change-password',
+        loadComponent: () =>
+          import('./change-password.component').then(
+            (m) => m.ChangePasswordComponent,
+          ),
+      },
+      {
+        path: 'users',
+        canActivate: [adminGuardFn],
+        loadComponent: () =>
+          import('./users.component').then((m) => m.UsersComponent),
       },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],

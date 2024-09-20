@@ -5,7 +5,7 @@ import { Recurrence } from './recurrence.enum';
 
 export type Loan = {
   id?: number;
-  product: string;
+  products?: LoanProduct[];
   price_base: number;
   commerce: string;
   client_id: string;
@@ -20,4 +20,14 @@ export type Loan = {
   payments?: Payment[];
   created_at: Date;
   status_id: number;
+};
+
+export type LoanProduct = {
+  id: string;
+  loan_id?: number;
+  description: string;
+  price_base: number;
+  brand: string;
+  model: string;
+  quantity: number;
 };

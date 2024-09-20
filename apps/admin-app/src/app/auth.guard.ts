@@ -10,6 +10,16 @@ export const authGuardFn: CanActivateFn = async () => {
   return auth.isSignedIn() || router.createUrlTree(['/auth']);
 };
 
+export const adminGuardFn: CanActivateFn = async () => {
+  const auth = inject(AuthStore);
+  const router = inject(Router);
+
+  return (
+    (auth.isSignedIn() && auth.user()?.role === 'admin') ||
+    router.createUrlTree(['/auth'])
+  );
+};
+
 function sleep(delay: number): Promise<void> {
   return new Promise((res) => {
     setTimeout(() => res(), delay);

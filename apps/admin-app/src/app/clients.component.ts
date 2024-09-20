@@ -22,16 +22,17 @@ import { DashboardStore } from './stores/dashboard.store';
     CardModule,
   ],
   template: `<p-card>
-    <div class="flex items-center justify-between">
-      <h1>Clientes</h1>
-
-      <p-button
-        type="button"
-        label="Nuevo"
-        icon="pi pi-plus"
-        routerLink="new"
-      />
-    </div>
+    <ng-template pTemplate="header">
+      <div class="p-card-title flex justify-between items-center p-5 pb-0 mb-0">
+        Clientes
+        <p-button
+          type="button"
+          label="Nuevo"
+          icon="pi pi-plus"
+          routerLink="new"
+        />
+      </div>
+    </ng-template>
     <p-table
       [value]="store.clients()"
       [paginator]="true"
@@ -63,7 +64,7 @@ import { DashboardStore } from './stores/dashboard.store';
                 outlined
                 severity="success"
                 icon="pi pi-pencil"
-                [routerLink]="client.id"
+                routerLink="{{ client.id }}"
               />
               <p-button
                 text

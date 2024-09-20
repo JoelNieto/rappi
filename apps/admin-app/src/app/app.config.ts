@@ -1,5 +1,5 @@
 import { registerLocaleData } from '@angular/common';
-import localeEs from '@angular/common/locales/es-MX';
+import localeEs from '@angular/common/locales/es-US';
 import {
   ApplicationConfig,
   LOCALE_ID,
@@ -13,7 +13,7 @@ import {
 } from '@angular/router';
 import { appRoutes } from './app.routes';
 
-registerLocaleData(localeEs, 'es-MX');
+registerLocaleData(localeEs, 'es-US');
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,6 +24,6 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
     ),
     provideAnimationsAsync(),
-    { provide: LOCALE_ID, useValue: 'es-MX' },
+    { provide: LOCALE_ID, useValue: 'es-US' },
   ],
 };

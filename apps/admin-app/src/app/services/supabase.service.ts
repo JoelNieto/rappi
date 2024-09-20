@@ -11,10 +11,16 @@ import {
 })
 export class SupabaseService {
   public client: SupabaseClient;
+  public admin: SupabaseClient;
   constructor() {
+    console.log(process.env['SUPABASE_URL']);
     this.client = new SupabaseClient(
       process.env['SUPABASE_URL'] ?? '',
       process.env['SUPABASE_KEY'] ?? '',
+    );
+    this.admin = new SupabaseClient(
+      process.env['SUPABASE_URL'] ?? '',
+      process.env['SUPABASE_SERVICE_ROLE'] ?? '',
     );
   }
 
@@ -38,7 +44,7 @@ export class SupabaseService {
     const session = await this.currentSession();
     const { data } = await this.client
       .from('profiles')
-      .select('id, username, full_name, avatar_url')
+      .select('id, username, full_name, avatar_url, role')
       .eq('id', session?.user.id)
       .single();
     return data;
@@ -60,6 +66,24 @@ export class SupabaseService {
       email,
       options: { emailRedirectTo: process.env['REDIRECT_URI'] },
     });
+  }
+
+  signInWithPassword({ email, password }: { email: string; password: string }) {
+    return this.client.auth.signInWithPassword({ email, password });
+  }
+
+  resetPassword(email: string) {
+    return this.client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env['REDIRECT_URI']}/change-password`,
+    });
+  }
+
+  inviteUser(email: string) {
+    return this.admin.auth.admin.inviteUserByEmail(email);
+  }
+
+  changePassword(password: string) {
+    return this.client.auth.updateUser({ password });
   }
 
   signOut() {

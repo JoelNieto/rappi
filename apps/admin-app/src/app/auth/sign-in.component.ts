@@ -4,74 +4,104 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
-import { SupabaseService } from '../services/supabase.service';
+import { PasswordModule } from 'primeng/password';
+import { markGroupAsDirty } from '../services/utils';
+import { AuthStore } from '../stores/auth.store';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [CardModule, InputTextModule, ButtonModule, ReactiveFormsModule],
-  template: ` <div class="h-svh flex justify-center items-center">
+  imports: [
+    CardModule,
+    InputTextModule,
+    ButtonModule,
+    ReactiveFormsModule,
+    PasswordModule,
+  ],
+  template: ` <form
+    [formGroup]="signInForm"
+    class="h-svh flex justify-center items-center"
+  >
     <p-card
-      class=" w-full md:w-1/3 px-8"
+      class="w-full md:w-1/3 px-8 "
       header="Rappi Presta Admin"
       subheader="Iniciar sesion"
     >
-      <div class="input-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          [formControl]="emailControl"
-          pInputText
-          type="email"
-        />
-      </div>
-      <div class="flex justify-end pt-4">
-        <p-button
-          label="Iniciar sesion"
-          [disabled]="emailControl.invalid"
-          [loading]="loading()"
-          (onClick)="signIn()"
-        />
+      <div class="flex-col flex gap-4">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input id="email" formControlName="email" pInputText type="email" />
+        </div>
+        <div class="input-group">
+          <label for="password">Contraseña</label>
+          <p-password [feedback]="false" formControlName="password" />
+        </div>
+        <div class="flex justify-end pt-4">
+          <p-button
+            label="Iniciar sesion"
+            [loading]="loading()"
+            (onClick)="signIn()"
+          />
+        </div>
       </div>
     </p-card>
-  </div>`,
+  </form>`,
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SignInComponent {
-  private supabase = inject(SupabaseService);
+  private auth = inject(AuthStore);
   protected loading = signal(false);
   private message = inject(MessageService);
-  public emailControl = new FormControl('', {
-    validators: [Validators.required, Validators.email],
-    updateOn: 'blur',
-    nonNullable: true,
+  protected signInForm = new FormGroup({
+    email: new FormControl('', {
+      validators: [Validators.required, Validators.email],
+      nonNullable: true,
+    }),
+    password: new FormControl('', {
+      validators: [Validators.required],
+      nonNullable: true,
+    }),
   });
 
   async signIn() {
-    this.loading.set(true);
-    const { error } = await this.supabase.signIn(this.emailControl.value);
-    if (error) {
-      console.error(error);
+    if (!this.signInForm.valid) {
+      markGroupAsDirty(this.signInForm);
       this.message.add({
         severity: 'error',
         summary: 'Error',
-        detail: error.message,
+        detail: 'Revise los campos',
       });
-      this.loading.set(false);
       return;
     }
-    this.emailControl.reset();
-    this.loading.set(false);
-    this.message.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Revise su email para continuar',
-    });
+    this.loading.set(true);
+    const { email, password } = this.signInForm.getRawValue();
+    try {
+      await this.auth.signIn({ email, password });
+      this.message.add({
+        severity: 'success',
+        summary: 'Exito',
+        detail: 'Bienvenido',
+      });
+    } catch (error) {
+      this.message.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Algo salio mal',
+      });
+    } finally {
+      this.signInForm.reset();
+      this.loading.set(false);
+    }
   }
 }

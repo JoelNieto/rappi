@@ -3,14 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
-  Injector,
   OnInit,
-  signal,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
+  FormArray,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
@@ -27,6 +25,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
+import { map } from 'rxjs';
 import { v4 } from 'uuid';
 import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
@@ -60,10 +59,7 @@ import { DashboardStore } from './stores/dashboard.store';
             <p-button label="Guardar" type="submit" icon="pi pi-save" />
           </div>
         </ng-template>
-        <div
-          [formGroup]="form"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-        >
+        <div [formGroup]="form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="input-group">
             <label for="client">Cliente</label>
             <p-dropdown
@@ -97,15 +93,7 @@ import { DashboardStore } from './stores/dashboard.store';
               </ng-template>
             </p-dropdown>
           </div>
-          <div class="input-group">
-            <label for="product">Producto</label>
-            <input
-              pInputText
-              formControlName="product"
-              id="product"
-              placeholder="Ingrese el producto..."
-            />
-          </div>
+
           <div class="input-group">
             <label for="commerce">Comercio</label>
             <input
@@ -113,15 +101,6 @@ import { DashboardStore } from './stores/dashboard.store';
               formControlName="commerce"
               id="commerce"
               placeholder="Ingrese el comercio..."
-            />
-          </div>
-          <div class="input-group">
-            <label for="price_base">Precio base</label>
-            <p-inputNumber
-              formControlName="price_base"
-              mode="currency"
-              id="price_base"
-              currency="USD"
             />
           </div>
           <div class="input-group">
@@ -152,6 +131,132 @@ import { DashboardStore } from './stores/dashboard.store';
               appendTo="body"
             />
           </div>
+          <div formArrayName="products" class="col-span-2">
+            <h2 class="mb-0">Productos</h2>
+            <p-table [value]="products.controls">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Cantidad</th>
+                  <th>Producto</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th>Precio base</th>
+                  <th></th>
+                </tr>
+              </ng-template>
+              <ng-template
+                pTemplate="body"
+                let-product
+                let-i="rowIndex"
+                let-editing="editing"
+              >
+                <tr>
+                  <td
+                    [pEditableColumn]="product.quantity"
+                    pEditableColumnField="quantity"
+                  >
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <p-inputNumber
+                          [formControl]="product.controls.quantity"
+                          min="1"
+                        />
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ product.controls.quantity.value }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </td>
+                  <td
+                    [pEditableColumn]="product.description"
+                    pEditableColumnField="description"
+                  >
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <input
+                          pInputText
+                          [formControl]="product.controls.description"
+                          placeholder="Ingrese el producto..."
+                        />
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ product.controls.description.value }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </td>
+                  <td
+                    [pEditableColumn]="product.brand"
+                    pEditableColumnField="brand"
+                  >
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <input
+                          pInputText
+                          [formControl]="product.controls.brand"
+                          placeholder="Ingrese la marca..."
+                        />
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ product.controls.brand.value }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </td>
+                  <td
+                    [pEditableColumn]="product.model"
+                    pEditableColumnField="model"
+                  >
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <input
+                          pInputText
+                          [formControl]="product.controls.model"
+                          placeholder="Ingrese el modelo..."
+                        />
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ product.controls.model.value }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </td>
+                  <td
+                    [pEditableColumn]="product.price_base"
+                    pEditableColumnField="price_base"
+                  >
+                    <p-cellEditor>
+                      <ng-template pTemplate="input">
+                        <p-inputNumber
+                          [formControl]="product.controls.price_base"
+                          mode="currency"
+                          currency="USD"
+                        />
+                      </ng-template>
+                      <ng-template pTemplate="output">
+                        {{ product.controls.price_base.value | currency }}
+                      </ng-template>
+                    </p-cellEditor>
+                  </td>
+                  <td>
+                    <p-button
+                      type="button"
+                      rounded
+                      text
+                      severity="danger"
+                      icon="pi pi-trash"
+                      (click)="removeProduct(i)"
+                    />
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+            <div class="flex justify-end mt-3">
+              <p-button
+                type="button"
+                label="Producto"
+                icon="pi pi-plus"
+                (click)="addProduct()"
+              />
+            </div>
+          </div>
         </div>
       </p-card>
       <p-card header="Terminos del prestamo">
@@ -159,11 +264,11 @@ import { DashboardStore } from './stores/dashboard.store';
         <div class="grid grid-cols-4">
           <div class="input-group">
             <label>Total a financiar</label>
-            {{ totalAmount() | currency: '$' }}
+            {{ totalPrice() | currency }}
           </div>
           <div class="input-group">
             <label>Monto cuota</label>
-            {{ installmentAmount() | currency: '$' }}
+            {{ installmentAmount() | currency }}
           </div>
         </div>
         <p-table [value]="projectedInstallments()">
@@ -189,13 +294,18 @@ import { DashboardStore } from './stores/dashboard.store';
 })
 export class LoanFormComponent implements OnInit {
   form = new FormGroup({
-    product: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required],
-    }),
+    products: new FormArray<
+      FormGroup<{
+        id: FormControl<string>;
+        quantity: FormControl<number>;
+        description: FormControl<string>;
+        price_base: FormControl<number>;
+        model: FormControl<string>;
+        brand: FormControl<string>;
+      }>
+    >([]),
     price_base: new FormControl(0, {
       nonNullable: true,
-      validators: [Validators.required, Validators.min(1)],
     }),
     commerce: new FormControl('', {
       nonNullable: true,
@@ -237,6 +347,17 @@ export class LoanFormComponent implements OnInit {
       initialValue: 1,
     },
   );
+  protected readonly totalPrice = toSignal(
+    this.form.controls.products.valueChanges.pipe(
+      map((products) =>
+        products.reduce(
+          (acc: number, product) => acc + (product?.price_base ?? 0),
+          0,
+        ),
+      ),
+    ),
+    { initialValue: 0 },
+  );
 
   readonly rate = toSignal(this.form.controls.rate.valueChanges, {
     initialValue: 50,
@@ -269,50 +390,48 @@ export class LoanFormComponent implements OnInit {
     },
   );
 
-  totalAmount = computed(() => this.priceBase() * (1 + this.rate() / 100));
-  private injector = inject(Injector);
+  totalAmount = computed(() => this.totalPrice() * (1 + this.rate() / 100));
   private router = inject(Router);
-  protected projectedInstallments = signal<Installment[]>([]);
+
+  protected projectedInstallments = computed<Installment[]>(() => {
+    const _installments: Installment[] = [];
+    let current = toDate(this.startDate(), {
+      timeZone: 'America/Panama',
+    });
+
+    if (!this.installments() || this.installments() === 0) {
+      return [];
+    }
+
+    for (let i = 1; i <= this.installments()!; i++) {
+      _installments.push({
+        id: v4(),
+        seq: i,
+        amount: this.installmentAmount(),
+        paid_amount: 0,
+        due_date: current,
+      });
+      if (this.recurrence() === Recurrence.Mensual) {
+        current = addMonths(current, 1);
+      }
+      if (this.recurrence() === Recurrence.Quincenal) {
+        if (current.getDate() <= 15) {
+          current = addDays(current, 15);
+        } else {
+          current = addMonths(current, 1);
+          current = subDays(current, 15);
+        }
+      }
+    }
+    return _installments;
+  });
 
   ngOnInit() {
-    effect(
-      () => {
-        let current = toDate(this.startDate(), {
-          timeZone: 'America/Panama',
-        });
-        this.projectedInstallments.set([]);
+    this.addProduct();
+  }
 
-        if (!this.installments() || this.installments() === 0) {
-          return;
-        }
-
-        for (let i = 1; i <= this.installments()!; i++) {
-          this.projectedInstallments.update((installments) => [
-            ...installments,
-            {
-              id: v4(),
-              seq: i,
-              amount: this.installmentAmount(),
-              paid_amount: 0,
-              due_date: current,
-            },
-          ]);
-          if (this.recurrence() === Recurrence.Mensual) {
-            current = addMonths(current, 1);
-            return;
-          }
-          if (this.recurrence() === Recurrence.Quincenal) {
-            if (current.getDate() <= 15) {
-              current = addDays(current, 15);
-            } else {
-              current = addMonths(current, 1);
-              current = subDays(current, 15);
-            }
-          }
-        }
-      },
-      { injector: this.injector, allowSignalWrites: true },
-    );
+  get products() {
+    return this.form.get('products') as FormArray;
   }
 
   saveChanges() {
@@ -328,11 +447,37 @@ export class LoanFormComponent implements OnInit {
     }
     const request = {
       ...this.form.getRawValue(),
+      price_base: this.totalAmount(),
       installments: this.projectedInstallments(),
     };
 
     this.store.createLoan(request).then((data) => {
       this.router.navigate(['/loans', data.id]);
     });
+  }
+
+  protected addProduct(): void {
+    const products = this.form.controls.products;
+    products.push(
+      new FormGroup({
+        id: new FormControl(v4(), { nonNullable: true }),
+        quantity: new FormControl(1, { nonNullable: true }),
+        description: new FormControl('', {
+          nonNullable: true,
+          validators: [Validators.required],
+        }),
+        price_base: new FormControl(0, {
+          nonNullable: true,
+          validators: [Validators.required, Validators.min(1)],
+        }),
+        model: new FormControl('', { nonNullable: true }),
+        brand: new FormControl('', { nonNullable: true }),
+      }),
+    );
+  }
+
+  removeProduct(index: number) {
+    const products = this.form.controls.products as unknown as FormArray;
+    products.removeAt(index);
   }
 }

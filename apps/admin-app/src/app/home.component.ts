@@ -16,7 +16,7 @@ import { SupabaseService } from './services/supabase.service';
     <p-card header="Total prestado">
       <div class="flex justify-between">
         <div class="text-2xl font-semibold text-slate-700">
-          {{ loanSum() | currency: '$' }}
+          {{ loanSum() | currency }}
         </div>
         <span class="pi pi-money-bill text-3xl "></span>
       </div>

@@ -8,7 +8,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { Client, Installment, Loan, Payment } from '@rappi/models';
+import { Client, Installment, Loan, LoanProduct, Payment } from '@rappi/models';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { filter, from, map, pipe, switchMap, tap } from 'rxjs';
 import { SupabaseService } from '../services/supabase.service';
@@ -163,7 +163,7 @@ export const DashboardStore = signalStore(
         try {
           const { data, error } = await supabase.client
             .from('loans')
-            .insert(omit(request, 'installments'))
+            .insert(omit(request, 'installments', 'products'))
             .select('*')
             .single();
           if (error) {
@@ -176,6 +176,13 @@ export const DashboardStore = signalStore(
           }));
           if (installments) {
             await saveInstallments(installments);
+          }
+          const products = request.products?.map((x) => ({
+            ...x,
+            loan_id: data.id,
+          }));
+          if (products) {
+            await saveLoanProducts(products);
           }
           patchState(state, {
             loans: [...state.loans(), data],
@@ -209,6 +216,14 @@ export const DashboardStore = signalStore(
           throw error;
         }
       }
+      async function saveLoanProducts(products: LoanProduct[]) {
+        const { error } = await supabase.client
+          .from('loan_products')
+          .insert(products);
+        if (error) {
+          throw error;
+        }
+      }
 
       const getLoanById = rxMethod<number | null>(
         pipe(
@@ -220,7 +235,7 @@ export const DashboardStore = signalStore(
               supabase.client
                 .from('loans')
                 .select(
-                  '*, client:clients(*), installments:loan_installments(*), payments:loan_payments(*)',
+                  '*, client:clients(*), installments:loan_installments(*), payments:loan_payments(*), products:loan_products(*)',
                 )
                 .eq('id', id)
                 .order('seq', { referencedTable: 'loan_installments' })

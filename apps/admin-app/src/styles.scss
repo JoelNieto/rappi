@@ -49,6 +49,7 @@ th {
   }
   .p-dropdown,
   .p-icon-field,
+  .p-password,
   input,
   .p-inputnumber,
   .p-calendar {
@@ -70,9 +71,9 @@ h1 {
 }
 
 .p-card {
-  @apply shadow-none border border-slate-200;
+  @apply shadow-none border border-gray-200;
 }
 
 .p-card .p-card-title {
-  @apply font-normal text-slate-500;
+  @apply text-slate-700 font-medium;
 }

@@ -7,23 +7,33 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
   selector: 'app-loans',
   standalone: true,
-  imports: [ButtonModule, TableModule, RouterLink, DatePipe, CurrencyPipe],
-  template: `<div class="flex items-center justify-between ">
-      <h1>Prestamos</h1>
-
-      <p-button
-        type="button"
-        label="Nuevo"
-        icon="pi pi-plus"
-        routerLink="new"
-      />
-    </div>
+  imports: [
+    ButtonModule,
+    TableModule,
+    RouterLink,
+    DatePipe,
+    CurrencyPipe,
+    CardModule,
+  ],
+  template: `<p-card>
+    <ng-template pTemplate="header">
+      <div class="p-card-title flex justify-between items-center p-5 pb-0 mb-0">
+        Prestamos
+        <p-button
+          type="button"
+          label="Nuevo"
+          icon="pi pi-plus"
+          routerLink="new"
+        />
+      </div>
+    </ng-template>
     <p-table
       [value]="store.loans()"
       [paginator]="true"
@@ -33,11 +43,9 @@ import { DashboardStore } from './stores/dashboard.store';
       <ng-template pTemplate="header">
         <tr>
           <th>#</th>
-          <th>Producto</th>
           <th>Comercio</th>
           <th>Cliente</th>
           <th>Fecha de creación</th>
-          <th>Estado</th>
           <th>Monto</th>
           <th>Acciones</th>
         </tr>
@@ -45,12 +53,10 @@ import { DashboardStore } from './stores/dashboard.store';
       <ng-template pTemplate="body" let-loan>
         <tr>
           <td>{{ loan.id }}</td>
-          <td>{{ loan.product }}</td>
           <td>{{ loan.commerce }}</td>
           <td>{{ loan.client?.first_name }} {{ loan.client?.last_name }}</td>
           <td>{{ loan.created_at | date: 'dd/MM/yyyy' }}</td>
-          <td>{{ loan.status_id }}</td>
-          <td>{{ loan.price_base | currency: '$' }}</td>
+          <td>{{ loan.price_base | currency }}</td>
           <td>
             <div class="flex gap-2">
               <p-button
@@ -72,7 +78,8 @@ import { DashboardStore } from './stores/dashboard.store';
             </div>
           </td>
         </tr> </ng-template
-    ></p-table> `,
+    ></p-table>
+  </p-card> `,
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

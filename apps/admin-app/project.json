@@ -7,15 +7,9 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:application",
+      "executor": "@nx/angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "define": {
-          "process.env.REDIRECT_URI": "'http://localhost:4200'",
-          "process.env.SUPABASE_URL": "'https://hnhtwylrsesfnfxdugox.supabase.co'",
-          "process.env.SUPABASE_KEY": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuaHR3eWxyc2VzZm5meGR1Z294Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQxMTQxMTcsImV4cCI6MjAzOTY5MDExN30.NcAmCa_UPADzh4DaBuYMgi_n9Ah0yovSt1rr1epszYw'",
-          "process.env.SUPABASE_SECRET_KEY": "'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhuaHR3eWxyc2VzZm5meGR1Z294Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNDExNDExNywiZXhwIjoyMDM5NjkwMTE3fQ.6XfixjnMG-09FABBV3P-U_pcqMO1Loun3qpupYTZL2A'"
-        },
         "outputPath": "dist/apps/admin-app",
         "index": "apps/admin-app/src/index.html",
         "browser": "apps/admin-app/src/main.ts",
@@ -33,9 +27,9 @@
             "input": "apps/admin-app/public"
           }
         ],
-
         "styles": ["apps/admin-app/src/styles.scss"],
-        "scripts": []
+        "scripts": [],
+        "plugins": ["apps/admin-app/plugins/env-var-plugin.js"]
       },
       "configurations": {
         "production": {
@@ -62,7 +56,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:dev-server",
       "configurations": {
         "production": {
           "buildTarget": "admin-app:build:production"

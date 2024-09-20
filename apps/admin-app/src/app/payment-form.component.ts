@@ -41,7 +41,7 @@ import { DashboardStore } from './stores/dashboard.store';
           formControlName="amount"
           mode="currency"
           currency="USD"
-          locale="en-US"
+          locale="es-US"
           id="amount"
         />
       </div>
