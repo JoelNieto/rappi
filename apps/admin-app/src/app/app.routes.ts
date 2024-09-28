@@ -7,6 +7,21 @@ export const appRoutes: Route[] = [
     loadComponent: () => import('./auth/sign-in.component'),
   },
   {
+    path: 'reset-password',
+    loadComponent: () =>
+      import('./auth/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
+  },
+  {
+    path: 'change-password',
+    canActivate: [authGuardFn],
+    loadComponent: () =>
+      import('./auth/change-password.component').then(
+        (m) => m.ChangePasswordComponent,
+      ),
+  },
+  {
     path: '',
     canActivate: [authGuardFn],
     loadComponent: () =>
@@ -54,19 +69,14 @@ export const appRoutes: Route[] = [
         loadComponent: () =>
           import('./profile.component').then((m) => m.ProfileComponent),
       },
-      {
-        path: 'change-password',
-        loadComponent: () =>
-          import('./change-password.component').then(
-            (m) => m.ChangePasswordComponent,
-          ),
-      },
+
       {
         path: 'users',
         canActivate: [adminGuardFn],
         loadComponent: () =>
           import('./users.component').then((m) => m.UsersComponent),
       },
+      { path: '**', redirectTo: 'home', pathMatch: 'full' },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ],
   },

@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Profile } from '@rappi/models';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -16,6 +17,7 @@ import { TableModule } from 'primeng/table';
 import { from, map } from 'rxjs';
 import { RolePipe } from './role.pipe';
 import { SupabaseService } from './services/supabase.service';
+import { UserFormComponent } from './user-form.component';
 
 @Component({
   selector: 'app-users',
@@ -48,6 +50,7 @@ import { SupabaseService } from './services/supabase.service';
               Email <p-sortIcon field="username" />
             </th>
             <th pSortableColumn="role">Perfil<p-sortIcon field="role" /></th>
+            <th></th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-user>
@@ -55,6 +58,16 @@ import { SupabaseService } from './services/supabase.service';
             <td>{{ user.full_name }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.role | role }}</td>
+            <td>
+              <p-button
+                rounded
+                text
+                outlined
+                severity="success"
+                icon="pi pi-pencil"
+                (onClick)="editUser(user)"
+              />
+            </td>
           </tr>
         </ng-template>
       </p-table>
@@ -92,6 +105,7 @@ export class UsersComponent {
   private message = inject(MessageService);
   protected showDialog = false;
   private supabase = inject(SupabaseService);
+  private dialogService = inject(DialogService);
   protected users = toSignal(
     from(this.supabase.client.from('profiles').select('*')).pipe(
       map(({ data }) => data!),
@@ -106,6 +120,19 @@ export class UsersComponent {
 
   protected inviteUser() {
     this.showDialog = true;
+  }
+
+  protected editUser(user: Partial<Profile>) {
+    this.dialogService.open(UserFormComponent, {
+      header: 'Editar usuario',
+      width: '35vw',
+      modal: true,
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw',
+      },
+      data: { user },
+    });
   }
 
   protected invite() {

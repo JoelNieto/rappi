@@ -10,6 +10,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -27,6 +28,7 @@ import { AuthStore } from '../stores/auth.store';
     ButtonModule,
     ReactiveFormsModule,
     PasswordModule,
+    RouterLink,
   ],
   template: ` <form
     [formGroup]="signInForm"
@@ -46,8 +48,15 @@ import { AuthStore } from '../stores/auth.store';
           <label for="password">Contraseña</label>
           <p-password [feedback]="false" formControlName="password" />
         </div>
-        <div class="flex justify-end pt-4">
+        <div class="flex flex-col md:flex-row justify-end gap-4 pt-4">
           <p-button
+            class="w-full md:w-auto"
+            link
+            label="Olvide mi contraseña"
+            routerLink="/reset-password"
+          />
+          <p-button
+            class="w-full md:w-auto"
             label="Iniciar sesion"
             [loading]="loading()"
             (onClick)="signIn()"

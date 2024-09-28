@@ -12,11 +12,11 @@ import { RouterLink } from '@angular/router';
 import {
   Installment,
   InstallmentStatus,
+  Loan,
   Payment,
   PaymentMethod,
 } from '@rappi/models';
 import { isBefore } from 'date-fns';
-import jsPDF from 'jspdf';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -24,6 +24,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
 import { TagModule } from 'primeng/tag';
+import { DocGeneratorsService } from './doc-generators.service';
 import { PaymentFormComponent } from './payment-form.component';
 import { DashboardStore } from './stores/dashboard.store';
 
@@ -67,6 +68,12 @@ import { DashboardStore } from './stores/dashboard.store';
               />
               <p-button
                 type="button"
+                icon="pi pi-print"
+                outlined
+                (onClick)="printLoan(loan)"
+              />
+              <p-button
+                type="button"
                 label="Registrar pago"
                 icon="pi pi-money-bill"
                 severity="success"
@@ -100,6 +107,30 @@ import { DashboardStore } from './stores/dashboard.store';
               <p>{{ loan.created_at | date: 'dd/MM/yyyy' }}</p>
             </div>
           </div>
+          <p class="text-lg font-semibold">Productos</p>
+          <p-table
+            [value]="loan?.products || []"
+            styleClass=" p-datatable-gridlines"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Producto</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-product>
+              <tr>
+                <td>{{ product.description }}</td>
+                <td>{{ product.brand }}</td>
+                <td>{{ product.model }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.price_base | currency }}</td>
+              </tr>
+            </ng-template>
+          </p-table>
           <p-tabView>
             <p-tabPanel header="Historial de pagos">
               @if (loan.payments) {
@@ -202,6 +233,7 @@ export class LoanDetailsComponent implements OnInit, OnDestroy {
   dialogService = inject(DialogService);
   public method = PaymentMethod;
   public status = InstallmentStatus;
+  private docGenerator = inject(DocGeneratorsService);
 
   protected overDueAmount = computed(() =>
     this.store
@@ -248,16 +280,10 @@ export class LoanDetailsComponent implements OnInit, OnDestroy {
   }
 
   generatePaymentReceipt(payment: Payment) {
-    const doc = new jsPDF();
-    doc.setFont('Helvetica');
-    doc.setFontSize(24);
-    doc.text('Rappi Presta', 10, 10);
-    doc.setFontSize(12);
-    doc.text('Recibo de pago', 10, 20);
-    doc.text(`Fecha de pago: ${payment.payment_date}`, 10, 20);
-    doc.text(`Monto: ${payment.amount}`, 10, 30);
-    doc.text(`Referencia: ${payment.reference}`, 10, 40);
-    doc.text(`Metodo de pago: ${payment.payment_method}`, 10, 50);
-    doc.save('recibo-de-pago.pdf');
+    console.log(payment);
+  }
+
+  printLoan(loan: Loan) {
+    this.docGenerator.printLoanReceipt(loan);
   }
 }

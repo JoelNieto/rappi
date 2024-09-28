@@ -1,4 +1,5 @@
 import { registerLocaleData } from '@angular/common';
+import { provideHttpClient } from '@angular/common/http';
 import localeEs from '@angular/common/locales/es-US';
 import {
   ApplicationConfig,
@@ -24,6 +25,7 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
     ),
     provideAnimationsAsync(),
+    provideHttpClient(),
     { provide: LOCALE_ID, useValue: 'es-US' },
   ],
 };

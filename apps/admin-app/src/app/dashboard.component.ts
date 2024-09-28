@@ -39,6 +39,7 @@ import { DashboardStore } from './stores/dashboard.store';
           severity="secondary"
           (onClick)="toggleMenu()"
         />
+        <img src="rappi-logo.svg" class="h-8" />
         <a class="text-2xl font-semibold text-slate-600 mb-0">Rappi</a>
       </div>
       <div>

@@ -304,9 +304,6 @@ export class LoanFormComponent implements OnInit {
         brand: FormControl<string>;
       }>
     >([]),
-    price_base: new FormControl(0, {
-      nonNullable: true,
-    }),
     commerce: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required],
@@ -335,12 +332,6 @@ export class LoanFormComponent implements OnInit {
   protected readonly store = inject(DashboardStore);
   private readonly toast = inject(MessageService);
 
-  private readonly priceBase = toSignal(
-    this.form.controls.price_base.valueChanges,
-    {
-      initialValue: 0,
-    },
-  );
   private readonly installments = toSignal(
     this.form.controls.installments_count.valueChanges,
     {
@@ -351,7 +342,8 @@ export class LoanFormComponent implements OnInit {
     this.form.controls.products.valueChanges.pipe(
       map((products) =>
         products.reduce(
-          (acc: number, product) => acc + (product?.price_base ?? 0),
+          (acc: number, product) =>
+            acc + (product?.price_base ?? 0) * (product?.quantity ?? 0),
           0,
         ),
       ),

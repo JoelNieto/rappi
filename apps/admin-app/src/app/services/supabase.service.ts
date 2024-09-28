@@ -13,7 +13,6 @@ export class SupabaseService {
   public client: SupabaseClient;
   public admin: SupabaseClient;
   constructor() {
-    console.log(process.env['SUPABASE_URL']);
     this.client = new SupabaseClient(
       process.env['SUPABASE_URL'] ?? '',
       process.env['SUPABASE_KEY'] ?? '',
@@ -55,6 +54,10 @@ export class SupabaseService {
     return this.client.from('profiles').upsert(update).single();
   }
 
+  updateRole({ userId, role }: { userId: string; role: 'admin' | 'sales' }) {
+    return this.admin.from('profiles').update({ role }).eq('id', userId);
+  }
+
   authChanges(
     callback: (event: AuthChangeEvent, session: Session | null) => void,
   ) {
@@ -64,7 +67,7 @@ export class SupabaseService {
   signIn(email: string) {
     return this.client.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: process.env['REDIRECT_URI'] },
+      options: { emailRedirectTo: process.env['SUPABASE_REDIRECT_URI'] },
     });
   }
 
@@ -73,8 +76,9 @@ export class SupabaseService {
   }
 
   resetPassword(email: string) {
+    console.log(process.env['SUPABASE_REDIRECT_URI']);
     return this.client.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env['REDIRECT_URI']}/change-password`,
+      redirectTo: `${process.env['SUPABASE_REDIRECT_URI']}/change-password`,
     });
   }
 

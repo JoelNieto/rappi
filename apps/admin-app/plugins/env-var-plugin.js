@@ -10,7 +10,6 @@ const envVarPlugin = {
       }
     }
     options.define['process.env'] = JSON.stringify(envVars);
-    console.log(envVars);
   },
 };
 
