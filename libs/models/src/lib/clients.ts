@@ -14,4 +14,11 @@ export type Client = {
   created_at?: Date;
   created_by?: string;
   user?: Profile;
+  documents?: Attachment[];
+};
+
+export type Attachment = {
+  id: string;
+  path: string;
+  created_at: Date;
 };

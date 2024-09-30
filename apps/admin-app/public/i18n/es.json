@@ -26,6 +26,7 @@
     "Viernes",
     "Sábado"
   ],
+  "browseFiles": "Browse Files",
   "dayNamesMin": ["D", "L", "M", "X", "J", "V", "S"],
   "dayNamesShort": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"],
   "emptyFilterMessage": "Sin opciones disponibles",

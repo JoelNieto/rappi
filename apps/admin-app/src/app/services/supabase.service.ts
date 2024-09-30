@@ -90,6 +90,22 @@ export class SupabaseService {
     return this.client.auth.updateUser({ password });
   }
 
+  uploadFile(file: File) {
+    return this.client.storage
+      .from('attachments')
+      .upload(file.name, file, { upsert: true });
+  }
+
+  getFileUrls(paths: string[]) {
+    return this.client.storage
+      .from('attachments')
+      .createSignedUrls(paths, 3600);
+  }
+
+  getFileUrl(path: string) {
+    return this.client.storage.from('attachments').createSignedUrl(path, 3600);
+  }
+
   signOut() {
     return this.client.auth.signOut();
   }

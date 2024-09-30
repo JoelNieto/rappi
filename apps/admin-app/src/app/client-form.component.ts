@@ -1,9 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
+  Injector,
   input,
+  OnDestroy,
   OnInit,
+  signal,
+  viewChild,
 } from '@angular/core';
 import {
   FormControl,
@@ -15,9 +20,16 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import {
+  FileUpload,
+  FileUploadHandlerEvent,
+  FileUploadModule,
+} from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
 import { v4 } from 'uuid';
+import { SupabaseService } from './services/supabase.service';
 import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
 
@@ -30,6 +42,8 @@ import { DashboardStore } from './stores/dashboard.store';
     InputNumberModule,
     ButtonModule,
     CardModule,
+    FileUploadModule,
+    TableModule,
   ],
   template: `
     <p-card header="Datos del cliente">
@@ -114,6 +128,55 @@ import { DashboardStore } from './stores/dashboard.store';
             currency="USD"
           />
         </div>
+
+        <div class="input-group md:col-span-2 lg:col-span-4">
+          <label for="notes">Documentacion</label>
+          <p-fileUpload
+            #fileUpload
+            customUpload
+            (uploadHandler)="onUpload($event)"
+            multiple
+            accept="image/*, application/pdf"
+            maxFileSize="1000000"
+            invalidFileSizeMessageSummary="Archivo muy grande"
+            invalidFileSizeMessageDetail="El archivo debe ser menor a 1MB"
+          >
+            <ng-template pTemplate="toolbar">
+              <div class="py-3">
+                Arrastre y suelte los archivos aquí para cargarlos.
+              </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <div class="flex flex-col gap-3">
+                @for (link of fileLinks(); track $index; let i = $index) {
+                  <div class="flex items-center gap-2">
+                    <a
+                      [href]="link.signedUrl"
+                      target="_blank"
+                      class="text-blue-500 hover:underline"
+                      >{{ link.path }}</a
+                    >
+                    <p-button
+                      severity="danger"
+                      icon="pi pi-times"
+                      type="button"
+                      size="small"
+                      (click)="removeFile(i)"
+                    />
+                  </div>
+                }
+              </div>
+
+              @if (uploadedFiles().length) {
+                <ul>
+                  @for (file of uploadedFiles(); track $index) {
+                    {{ file.name }} - {{ file.size }} bytes
+                  }
+                </ul>
+              }
+            </ng-template>
+          </p-fileUpload>
+        </div>
         <div
           class="flex md:flex-row justify-end flex-col gap-2 md:col-span-2 lg:col-span-4"
         >
@@ -136,14 +199,22 @@ import { DashboardStore } from './stores/dashboard.store';
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ClientFormComponent implements OnInit {
+export class ClientFormComponent implements OnInit, OnDestroy {
   public clientId = input<string>();
   protected store = inject(DashboardStore);
+  private injector = inject(Injector);
   private messageService = inject(MessageService);
   private router = inject(Router);
   private confirmationService = inject(ConfirmationService);
+  protected uploadedFiles = signal<File[]>([]);
+  private supabase = inject(SupabaseService);
+  protected fileUploader = viewChild.required<FileUpload>('fileUpload');
+  private newFilePaths = signal<string[]>([]);
+  protected fileLinks = signal<
+    { error: string | null; path: string | null; signedUrl: string }[]
+  >([]);
 
-  form = new FormGroup({
+  protected form = new FormGroup({
     id: new FormControl(v4(), { nonNullable: true }),
     first_name: new FormControl('', {
       validators: [Validators.required],
@@ -182,17 +253,36 @@ export class ClientFormComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (this.clientId()) {
-      const client = this.store
-        .clients()
-        .find((client) => client.id === this.clientId());
-      if (client) {
-        this.form.patchValue(client);
+      this.store.fetchClient(this.clientId());
+      effect(
+        () => {
+          if (this.store.selectedClient()) {
+            this.loadClientInfo();
+          }
+        },
+        { injector: this.injector },
+      );
+    }
+  }
+
+  async loadClientInfo() {
+    const client = this.store.selectedClient();
+    if (client) {
+      this.form.patchValue(client);
+      const documents = client?.documents;
+
+      if (documents?.length) {
+        const { data: links } = await this.supabase.getFileUrls(
+          documents.map((d) => d.path),
+        );
+        links?.length && this.fileLinks.set(links);
+        console.log('Links', links);
       }
     }
   }
 
   saveChanges() {
-    if (this.form.pristine) {
+    if (this.form.pristine && !this.newFilePaths().length) {
       this.messageService.add({
         severity: 'info',
         summary: 'Info',
@@ -211,22 +301,64 @@ export class ClientFormComponent implements OnInit {
 
       return;
     }
-    if (this.clientId()) {
-      this.store.updateClient(this.form.getRawValue()).then((value) => {
-        console.log('Client updated', value);
+
+    this.store
+      .saveClient(this.form.getRawValue(), this.newFilePaths())
+      .then((value) => {
+        console.log('Client saved', value);
       });
-      return;
+  }
+
+  async onUpload(event: FileUploadHandlerEvent) {
+    for (const file of event.files) {
+      const { data, error } = await this.supabase.uploadFile(file);
+      if (error) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo subir el archivo',
+        });
+        return;
+      }
+      this.uploadedFiles.update((current) => [...current, file]);
+      this.newFilePaths.update((current) => [...current, data.path]);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Éxito',
+        detail: 'Archivo subido correctamente',
+      });
     }
-    this.store.createClient(this.form.getRawValue()).then((value) => {
-      console.log('Client created', value);
-    });
+    this.fileUploader().clear();
+  }
+
+  removeFile(index: number) {
+    this.uploadedFiles.update((current) =>
+      current.filter((_, i) => i !== index),
+    );
+    this.newFilePaths.update((current) =>
+      current.filter((_, i) => i !== index),
+    );
+    this.fileLinks.update((current) => current.filter((_, i) => i !== index));
   }
 
   cancel() {
-    if (this.form.pristine) {
+    if (this.fileUploader().hasFiles()) {
+      this.confirmationService.confirm({
+        header: 'Confirmación',
+        message: 'Tienes archivos sin subir, ¿Estás seguro de cancelar?',
+        rejectButtonStyleClass: 'p-button-text',
+        accept: () => {
+          this.router.navigate(['/clients']);
+        },
+      });
+      return;
+    }
+    if (this.form.pristine && !this.newFilePaths().length) {
       this.router.navigate(['/clients']);
       return;
     }
+
     this.confirmationService.confirm({
       header: 'Confirmación',
       message: 'Tienes cambios sin guardar, ¿Estás seguro de cancelar?',
@@ -234,5 +366,9 @@ export class ClientFormComponent implements OnInit {
         this.router.navigate(['/clients']);
       },
     });
+  }
+
+  ngOnDestroy() {
+    this.store.fetchClient(undefined);
   }
 }

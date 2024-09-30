@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -26,6 +26,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { TagModule } from 'primeng/tag';
 import { DocGeneratorsService } from './doc-generators.service';
 import { PaymentFormComponent } from './payment-form.component';
+import { FileUrlPipe } from './pipes/file-url.pipe';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
@@ -41,6 +42,8 @@ import { DashboardStore } from './stores/dashboard.store';
     TabViewModule,
     TagModule,
     CardModule,
+    AsyncPipe,
+    FileUrlPipe,
   ],
   providers: [DynamicDialogRef, DialogService],
   template: `@if (store.loading()) {
@@ -144,6 +147,7 @@ import { DashboardStore } from './stores/dashboard.store';
                       <th>Monto</th>
                       <th>Referencia</th>
                       <th>Metodo de pago</th>
+                      <th>Comprobante</th>
                       <th></th>
                     </tr>
                   </ng-template>
@@ -153,6 +157,11 @@ import { DashboardStore } from './stores/dashboard.store';
                       <td>{{ payment.amount | currency }}</td>
                       <td>{{ payment.reference }}</td>
                       <td>{{ payment.payment_method }}</td>
+                      <td
+                        [innerHTML]="
+                          payment.payment_proof_url | fileUrl | async
+                        "
+                      ></td>
                       <td>
                         <p-button
                           text
@@ -165,7 +174,7 @@ import { DashboardStore } from './stores/dashboard.store';
                   </ng-template>
                   <ng-template pTemplate="emptymessage">
                     <tr>
-                      <td colspan="4" class="text-center">
+                      <td colspan="5" class="text-center">
                         Sin pagos registrados
                       </td>
                     </tr>

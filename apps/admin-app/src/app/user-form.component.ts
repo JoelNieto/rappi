@@ -54,7 +54,10 @@ export class UserFormComponent implements OnInit {
     { label: 'Ventas', value: 'sales' },
   ];
   form = new FormGroup({
-    full_name: new FormControl('', { nonNullable: true }),
+    full_name: new FormControl(
+      { value: '', disabled: true },
+      { nonNullable: true },
+    ),
     username: new FormControl(
       { value: '', disabled: true },
       { nonNullable: true },

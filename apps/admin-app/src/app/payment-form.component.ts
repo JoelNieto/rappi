@@ -16,9 +16,11 @@ import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { v4 } from 'uuid';
+import { SupabaseService } from './services/supabase.service';
 import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
 
@@ -32,6 +34,7 @@ import { DashboardStore } from './stores/dashboard.store';
     ButtonModule,
     DropdownModule,
     CalendarModule,
+    FileUploadModule,
   ],
   template: ` <form [formGroup]="form" (ngSubmit)="saveChanges()">
     <div class="grid md:grid-cols-2 gap-4">
@@ -41,6 +44,7 @@ import { DashboardStore } from './stores/dashboard.store';
           formControlName="amount"
           mode="currency"
           currency="USD"
+          x
           locale="es-US"
           id="amount"
         />
@@ -74,6 +78,20 @@ import { DashboardStore } from './stores/dashboard.store';
           optionValue="value"
         />
       </div>
+      <div class="input-group">
+        <label for="file">Comprobante</label>
+        <p-fileUpload
+          id="file"
+          customUpload
+          mode="basic"
+          chooseIcon="pi pi-upload"
+          uploadLabel="Subir"
+          cancelLabel="Cancelar"
+          cancelIcon="pi pi-times"
+          chooseLabel="Seleccionar"
+          (uploadHandler)="uploadFile($event)"
+        ></p-fileUpload>
+      </div>
     </div>
     <div class="flex justify-end gap-4 mt-4">
       <p-button
@@ -105,6 +123,7 @@ export class PaymentFormComponent implements OnInit {
   private toast = inject(MessageService);
   protected store = inject(DashboardStore);
   public dialogRef = inject(DynamicDialogRef);
+  private supabase = inject(SupabaseService);
 
   form = new FormGroup({
     id: new FormControl(v4(), { nonNullable: true }),
@@ -123,6 +142,7 @@ export class PaymentFormComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.required],
     }),
+    payment_proof_url: new FormControl('', { nonNullable: true }),
   });
 
   ngOnInit(): void {
@@ -142,6 +162,24 @@ export class PaymentFormComponent implements OnInit {
 
     this.store.applyPayment(this.form.getRawValue()).then(() => {
       this.dialogRef.close();
+    });
+  }
+
+  async uploadFile(event: FileUploadHandlerEvent) {
+    const { data, error } = await this.supabase.uploadFile(event.files[0]);
+    if (error) {
+      this.toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Ocurrió un error al subir el archivo',
+      });
+      return;
+    }
+    this.form.patchValue({ payment_proof_url: data.path });
+    this.toast.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Archivo subido correctamente',
     });
   }
 }

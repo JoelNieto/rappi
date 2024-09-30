@@ -1,3 +1,5 @@
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ClientFormComponent } from './client-form.component';
@@ -9,7 +11,13 @@ describe('ClientFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [DashboardStore, ConfirmationService, MessageService],
+      providers: [
+        DashboardStore,
+        ConfirmationService,
+        MessageService,
+        provideHttpClientTesting(),
+        provideHttpClient(),
+      ],
       imports: [ClientFormComponent],
     }).compileComponents();
 

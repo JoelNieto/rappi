@@ -9,4 +9,5 @@ export type Payment = {
   reference: string;
   created_at?: Date;
   payment_date: Date;
+  payment_proof_url?: string;
 };

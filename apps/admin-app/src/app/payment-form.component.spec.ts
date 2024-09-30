@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -15,6 +16,7 @@ describe('PaymentFormComponent', () => {
         DashboardStore,
         ConfirmationService,
         DynamicDialogRef,
+        provideHttpClient(),
         { provide: DynamicDialogConfig, useValue: { data: {} } },
       ],
       imports: [PaymentFormComponent],

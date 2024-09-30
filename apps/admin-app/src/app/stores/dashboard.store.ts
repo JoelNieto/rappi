@@ -15,7 +15,8 @@ import { SupabaseService } from '../services/supabase.service';
 import { omit } from '../services/utils';
 
 type State = {
-  clients: Client[];
+  clients: Partial<Client>[];
+  selectedClient: Client | undefined;
   loans: Loan[];
   loading: boolean;
   currentLoan: Loan | null;
@@ -24,6 +25,7 @@ type State = {
 
 export const initialState: State = {
   clients: [],
+  selectedClient: undefined,
   loans: [],
   loading: false,
   currentLoan: null,
@@ -43,13 +45,35 @@ export const DashboardStore = signalStore(
         patchState(state, { loading: true });
         const { data, error } = await supabase.client
           .from('clients')
-          .select('*');
+          .select(
+            'first_name, last_name, id, email, phone_number, salary, document_id, created_at',
+          );
         if (error) {
           console.error(error);
           patchState(state, { loading: false });
           return;
         }
         patchState(state, { clients: data, loading: false });
+      }
+
+      async function fetchClient(id: string | undefined) {
+        if (id === undefined) {
+          patchState(state, { selectedClient: undefined });
+          return;
+        }
+
+        patchState(state, { loading: true });
+        const { data, error } = await supabase.client
+          .from('clients')
+          .select('*, documents:client_documents(*)')
+          .eq('id', id)
+          .single();
+        if (error) {
+          console.error(error);
+          patchState(state, { loading: false });
+          return;
+        }
+        patchState(state, { selectedClient: data, loading: false });
       }
 
       async function fetchLoans() {
@@ -65,39 +89,23 @@ export const DashboardStore = signalStore(
         patchState(state, { loans: data, loading: false });
       }
 
-      async function createClient(request: Partial<Client>) {
-        patchState(state, { loading: true });
-        const { data, error } = await supabase.client
-          .from('clients')
-          .insert(request)
-          .select('*')
-          .single();
+      async function saveAttachments(filePaths: string[], clientId: string) {
+        const { error } = await supabase.client
+          .from('client_documents')
+          .insert(filePaths.map((path) => ({ path, client_id: clientId })))
+          .select('*');
         if (error) {
-          console.error(error);
-          toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Ocurrió un error al crear el cliente',
-          });
-          patchState(state, { loading: false });
           throw error;
         }
-
-        patchState(state, {
-          clients: [...state.clients(), data],
-          loading: false,
-        });
-        toast.add({
-          severity: 'success',
-          summary: 'Éxito',
-          detail: 'Cliente creado correctamente',
-        });
-        return data;
       }
 
-      async function updateClient(request: Client) {
+      async function saveClient(request: Client, filePaths?: string[]) {
         patchState(state, { loading: true });
-        const { error } = await supabase.client.from('clients').upsert(request);
+        const { error, data } = await supabase.client
+          .from('clients')
+          .upsert(request)
+          .select()
+          .single();
         if (error) {
           console.error(error);
           toast.add({
@@ -113,10 +121,22 @@ export const DashboardStore = signalStore(
           summary: 'Éxito',
           detail: 'Cliente actualizado correctamente',
         });
+        if (filePaths) {
+          await saveAttachments(filePaths, request.id);
+        }
+        if (state.clients().some((client) => client.id === request.id)) {
+          patchState(state, {
+            clients: state
+              .clients()
+              .map((client) =>
+                client.id === request.id ? { ...client, ...request } : client,
+              ),
+            loading: false,
+          });
+          return;
+        }
         patchState(state, {
-          clients: state
-            .clients()
-            .map((client) => (client.id === request.id ? request : client)),
+          clients: [...state.clients(), data],
           loading: false,
         });
       }
@@ -364,14 +384,14 @@ export const DashboardStore = signalStore(
       return {
         fetchClients,
         fetchLoans,
-        createClient,
+        saveClient,
         deleteClient,
         createLoan,
         getLoanById,
         setCurrentLoan,
         deleteLoan,
         applyPayment,
-        updateClient,
+        fetchClient,
       };
     },
   ),
