@@ -1,6 +1,7 @@
 import { Client } from './clients';
 import { Installment } from './installments';
 import { Payment } from './payments';
+import { Profile } from './profiles';
 import { Recurrence } from './recurrence.enum';
 
 export type Loan = {
@@ -11,6 +12,7 @@ export type Loan = {
   client_id: string;
   client?: Partial<Client>;
   created_by?: string;
+  agent?: Partial<Profile>;
   rate: number;
   installments_count: number;
   installments: Installment[];

@@ -93,6 +93,16 @@ import { DashboardStore } from './stores/dashboard.store';
                   <span [class.hidden]="collapsed()">Prestamos</span>
                 </a>
               </li>
+              <li>
+                <a
+                  routerLink="payments"
+                  routerLinkActive="selected"
+                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
+                  [ngClass]="{ 'px-0 justify-center': collapsed() }"
+                  ><span class="pi pi-credit-card"></span>
+                  <span [class.hidden]="collapsed()">Pagos</span>
+                </a>
+              </li>
             </ul>
           </div>
         </div>
@@ -116,7 +126,7 @@ import { DashboardStore } from './stores/dashboard.store';
 export class DashboardComponent {
   public supabase = inject(SupabaseService);
   protected auth = inject(AuthStore);
-  protected collapsed = signal(false);
+  protected collapsed = signal(true);
   protected menuItems: MenuItem[] = [
     {
       label: 'Ajustes',

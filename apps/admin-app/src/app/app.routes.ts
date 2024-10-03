@@ -65,11 +65,15 @@ export const appRoutes: Route[] = [
           ),
       },
       {
+        path: 'payments',
+        loadComponent: () =>
+          import('./payments.component').then((m) => m.PaymentsComponent),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./profile.component').then((m) => m.ProfileComponent),
       },
-
       {
         path: 'users',
         canActivate: [adminGuardFn],

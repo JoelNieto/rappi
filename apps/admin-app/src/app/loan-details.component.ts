@@ -8,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
   Installment,
@@ -19,6 +20,7 @@ import {
 import { isBefore } from 'date-fns';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { DropdownModule } from 'primeng/dropdown';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
@@ -40,10 +42,12 @@ import { DashboardStore } from './stores/dashboard.store';
     ButtonModule,
     RouterLink,
     TabViewModule,
+    DropdownModule,
     TagModule,
     CardModule,
     AsyncPipe,
     FileUrlPipe,
+    FormsModule,
   ],
   providers: [DynamicDialogRef, DialogService],
   template: `@if (store.loading()) {
@@ -109,6 +113,19 @@ import { DashboardStore } from './stores/dashboard.store';
               <h2 class="mb-1 font-normal text-slate-500">Fecha de creación</h2>
               <p>{{ loan.created_at | date: 'dd/MM/yyyy' }}</p>
             </div>
+            <div class="input-group">
+              <label for="user">Vendedor</label>
+              <p-dropdown
+                [options]="store.users()"
+                [ngModel]="loan.created_by"
+                optionValue="id"
+                optionLabel="full_name"
+                placeholder="Seleccione un vendedor"
+                filter
+                showClear
+                (ngModelChange)="updateLoanAssignee($event)"
+              />
+            </div>
           </div>
           <p class="text-lg font-semibold">Productos</p>
           <p-table
@@ -165,6 +182,12 @@ import { DashboardStore } from './stores/dashboard.store';
                       <td>
                         <p-button
                           text
+                          icon="pi pi-trash"
+                          rounded
+                          (onClick)="store.reversePayment(payment)"
+                        />
+                        <p-button
+                          text
                           icon="pi pi-print"
                           rounded
                           (onClick)="generatePaymentReceipt(payment)"
@@ -174,7 +197,7 @@ import { DashboardStore } from './stores/dashboard.store';
                   </ng-template>
                   <ng-template pTemplate="emptymessage">
                     <tr>
-                      <td colspan="5" class="text-center">
+                      <td colspan="6" class="text-center">
                         Sin pagos registrados
                       </td>
                     </tr>
@@ -268,6 +291,10 @@ export class LoanDetailsComponent implements OnInit, OnDestroy {
       return InstallmentStatus.Pending;
     }
     return InstallmentStatus.Overdue;
+  }
+
+  updateLoanAssignee(id: string) {
+    this.store.updateLoanAssignee(Number(this.loanId()), id);
   }
 
   registerPayment() {

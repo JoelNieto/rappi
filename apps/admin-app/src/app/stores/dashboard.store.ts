@@ -8,7 +8,14 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { Client, Installment, Loan, LoanProduct, Payment } from '@rappi/models';
+import {
+  Client,
+  Installment,
+  Loan,
+  LoanProduct,
+  Payment,
+  Profile,
+} from '@rappi/models';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { filter, from, map, pipe, switchMap, tap } from 'rxjs';
 import { SupabaseService } from '../services/supabase.service';
@@ -17,6 +24,7 @@ import { omit } from '../services/utils';
 type State = {
   clients: Partial<Client>[];
   selectedClient: Client | undefined;
+  users: Profile[];
   loans: Loan[];
   loading: boolean;
   currentLoan: Loan | null;
@@ -26,6 +34,7 @@ type State = {
 export const initialState: State = {
   clients: [],
   selectedClient: undefined,
+  users: [],
   loans: [],
   loading: false,
   currentLoan: null,
@@ -80,7 +89,7 @@ export const DashboardStore = signalStore(
         patchState(state, { loading: true });
         const { data, error } = await supabase.client
           .from('loans')
-          .select('*, client:clients(*)');
+          .select('*, client:clients(*), agent:profiles(*)');
         if (error) {
           console.error(error);
           patchState(state, { loading: false });
@@ -236,6 +245,7 @@ export const DashboardStore = signalStore(
           throw error;
         }
       }
+
       async function saveLoanProducts(products: LoanProduct[]) {
         const { error } = await supabase.client
           .from('loan_products')
@@ -279,6 +289,27 @@ export const DashboardStore = signalStore(
         ),
       );
 
+      async function updateLoanAssignee(loanId: number, agentId: string) {
+        const { error } = await supabase.client
+          .from('loans')
+          .update({ created_by: agentId })
+          .eq('id', loanId);
+        if (error) {
+          console.error(error);
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Ocurrió un error al asignar el préstamo',
+          });
+          throw error;
+        }
+        toast.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Préstamo asignado correctamente',
+        });
+      }
+
       async function deleteLoan(id: number) {
         confirmationService.confirm({
           message: '¿Está seguro de eliminar este préstamo?',
@@ -316,6 +347,85 @@ export const DashboardStore = signalStore(
 
       const setCurrentLoan = (id: number | null) =>
         patchState(state, { selectedLoanId: id });
+
+      async function fetchUsers() {
+        const { data, error } = await supabase.client
+          .from('profiles')
+          .select('*');
+        if (error) {
+          console.error(error);
+          return;
+        }
+        patchState(state, { users: data });
+      }
+
+      async function saveUser({
+        userId,
+        role,
+        full_name,
+        username,
+      }: {
+        userId: string;
+        role: 'admin' | 'sales';
+        full_name: string;
+        username: string;
+      }) {
+        patchState(state, { loading: true });
+        const { error } = await supabase.updateUser({
+          userId,
+          role,
+          full_name,
+          username,
+        });
+        if (error) {
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudo actualizar el usuario',
+          });
+          patchState(state, { loading: false });
+          console.error(error);
+          throw error;
+        }
+        toast.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Usuario actualizado',
+        });
+        fetchUsers();
+        patchState(state, { loading: false });
+      }
+
+      async function deleteUser(userId: string) {
+        confirmationService.confirm({
+          message: '¿Está seguro de eliminar este usuario?',
+          header: 'Confirmación',
+          icon: 'pi pi-exclamation-triangle',
+          rejectButtonStyleClass: 'p-button-text',
+          acceptLabel: 'Sí',
+          accept: async () => {
+            const { error } = await supabase.client
+              .from('profiles')
+              .delete()
+              .eq('id', userId);
+            if (error) {
+              console.error(error);
+              toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Ocurrió un error al eliminar el usuario',
+              });
+              return;
+            }
+            toast.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Usuario eliminado correctamente',
+            });
+            fetchUsers();
+          },
+        });
+      }
 
       async function applyPayment(payment: Payment) {
         const loan = state.currentLoan();
@@ -369,6 +479,73 @@ export const DashboardStore = signalStore(
         }
       }
 
+      async function reversePayment(payment: Partial<Payment>) {
+        confirmationService.confirm({
+          message: '¿Está seguro de revertir este pago?',
+          header: 'Confirmación',
+          icon: 'pi pi-exclamation-triangle',
+          rejectButtonStyleClass: 'p-button-text',
+          acceptLabel: 'Sí',
+          accept: async () => {
+            patchState(state, { loading: true });
+
+            const loan = state.currentLoan();
+            if (!loan) {
+              return;
+            }
+
+            const installments = loan.installments
+              .filter((x) => x.paid_amount > 0)
+              .sort((a, b) => b.seq - a.seq);
+            let amount = payment.amount!;
+            const reversedInstallments: Partial<Installment>[] = [];
+
+            while (amount > 0 && installments.length > 0) {
+              const current = installments[0];
+              const paid = Math.min(amount, current.paid_amount);
+
+              amount -= paid;
+              current.paid_amount -= paid;
+              reversedInstallments.push(current);
+
+              installments.shift();
+            }
+
+            try {
+              await savePaidInstallments(reversedInstallments);
+            } catch (err) {
+              console.error(err);
+              toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Ocurrió un error al revertir el pago',
+              });
+              throw err;
+            }
+            const { error } = await supabase.client
+              .from('loan_payments')
+              .delete()
+              .eq('id', payment.id);
+            if (error) {
+              console.error(error);
+              toast.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Ocurrió un error al eliminar el pago',
+              });
+              patchState(state, { loading: false });
+              throw error;
+            }
+            toast.add({
+              severity: 'success',
+              summary: 'Éxito',
+              detail: 'Pago eliminado correctamente',
+            });
+            patchState(state, { loading: false });
+          },
+        });
+      }
+
       async function savePaidInstallments(
         paidInstallments: Partial<Installment>[],
       ) {
@@ -392,13 +569,25 @@ export const DashboardStore = signalStore(
         deleteLoan,
         applyPayment,
         fetchClient,
+        fetchUsers,
+        saveUser,
+        deleteUser,
+        reversePayment,
+        updateLoanAssignee,
       };
     },
   ),
   withHooks({
-    async onInit({ fetchClients, fetchLoans, getLoanById, selectedLoanId }) {
+    async onInit({
+      fetchClients,
+      fetchLoans,
+      fetchUsers,
+      getLoanById,
+      selectedLoanId,
+    }) {
       await fetchClients();
       await fetchLoans();
+      await fetchUsers();
       getLoanById(selectedLoanId);
     },
   }),

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { DashboardStore } from './stores/dashboard.store';
 import { UsersComponent } from './users.component';
 
 describe('UsersComponent', () => {
@@ -8,7 +9,12 @@ describe('UsersComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [MessageService],
+      providers: [
+        MessageService,
+        DashboardStore,
+        MessageService,
+        ConfirmationService,
+      ],
       imports: [UsersComponent],
     }).compileComponents();
 

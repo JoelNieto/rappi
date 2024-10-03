@@ -54,8 +54,21 @@ export class SupabaseService {
     return this.client.from('profiles').upsert(update).single();
   }
 
-  updateRole({ userId, role }: { userId: string; role: 'admin' | 'sales' }) {
-    return this.admin.from('profiles').update({ role }).eq('id', userId);
+  updateUser({
+    userId,
+    role,
+    full_name,
+    username,
+  }: {
+    userId: string;
+    role: 'admin' | 'sales';
+    full_name: string;
+    username: string;
+  }) {
+    return this.admin
+      .from('profiles')
+      .update({ role, full_name, username })
+      .eq('id', userId);
   }
 
   authChanges(

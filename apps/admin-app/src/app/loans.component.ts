@@ -47,6 +47,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <th>Cliente</th>
           <th>Fecha de creación</th>
           <th>Monto</th>
+          <th>Asignado a</th>
           <th>Acciones</th>
         </tr>
       </ng-template>
@@ -57,6 +58,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <td>{{ loan.client?.first_name }} {{ loan.client?.last_name }}</td>
           <td>{{ loan.created_at | date: 'dd/MM/yyyy' }}</td>
           <td>{{ loan.price_base | currency }}</td>
+          <td>{{ loan.agent.full_name ?? loan.agent.username }}</td>
           <td>
             <div class="flex gap-2">
               <p-button

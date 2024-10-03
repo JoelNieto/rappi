@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DashboardStore } from './stores/dashboard.store';
 import { UserFormComponent } from './user-form.component';
 
 describe('UserFormComponent', () => {
@@ -13,6 +14,8 @@ describe('UserFormComponent', () => {
         { provide: DynamicDialogConfig, useValue: { data: {} } },
         DynamicDialogRef,
         MessageService,
+        DashboardStore,
+        ConfirmationService,
       ],
       imports: [UserFormComponent],
     }).compileComponents();

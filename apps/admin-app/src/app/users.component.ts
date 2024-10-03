@@ -4,7 +4,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Profile } from '@rappi/models';
 import { MessageService } from 'primeng/api';
@@ -14,9 +13,9 @@ import { DialogModule } from 'primeng/dialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
-import { from, map } from 'rxjs';
 import { RolePipe } from './role.pipe';
 import { SupabaseService } from './services/supabase.service';
+import { DashboardStore } from './stores/dashboard.store';
 import { UserFormComponent } from './user-form.component';
 
 @Component({
@@ -58,7 +57,7 @@ import { UserFormComponent } from './user-form.component';
             <td>{{ user.full_name }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.role | role }}</td>
-            <td>
+            <td class="flex gap-2">
               <p-button
                 rounded
                 text
@@ -66,6 +65,14 @@ import { UserFormComponent } from './user-form.component';
                 severity="success"
                 icon="pi pi-pencil"
                 (onClick)="editUser(user)"
+              />
+              <p-button
+                rounded
+                text
+                outlined
+                severity="danger"
+                icon="pi pi-trash"
+                (onClick)="store.deleteUser(user.id)"
               />
             </td>
           </tr>
@@ -105,13 +112,9 @@ export class UsersComponent {
   private message = inject(MessageService);
   protected showDialog = false;
   private supabase = inject(SupabaseService);
+  protected store = inject(DashboardStore);
   private dialogService = inject(DialogService);
-  protected users = toSignal(
-    from(this.supabase.client.from('profiles').select('*')).pipe(
-      map(({ data }) => data!),
-    ),
-    { initialValue: [] },
-  );
+  protected users = this.store.users;
 
   protected inviteEmailControl = new FormControl('', {
     validators: [Validators.required, Validators.email],
@@ -162,6 +165,7 @@ export class UsersComponent {
           detail: 'Usuario invitado',
         });
         this.showDialog = false;
+        this.store.fetchUsers();
       })
       .catch((error) => {
         this.message.add({

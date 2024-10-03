@@ -10,6 +10,9 @@ export class FileUrlPipe implements PipeTransform {
   private supabase = inject(SupabaseService);
   private sanitizer = inject(DomSanitizer);
   async transform(path: string): Promise<SafeHtml> {
+    if (!path) {
+      return '';
+    }
     const linkRegex = /https?:\/\/\S+/gm;
     const { data, error } = await this.supabase.getFileUrl(path);
     if (error) {
