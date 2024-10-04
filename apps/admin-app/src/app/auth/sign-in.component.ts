@@ -32,6 +32,7 @@ import { AuthStore } from '../stores/auth.store';
   ],
   template: ` <form
     [formGroup]="signInForm"
+    (ngSubmit)="signIn()"
     class="h-svh flex justify-center items-center"
   >
     <p-card
@@ -59,7 +60,7 @@ import { AuthStore } from '../stores/auth.store';
             class="w-full md:w-auto"
             label="Iniciar sesion"
             [loading]="loading()"
-            (onClick)="signIn()"
+            type="submit"
           />
         </div>
       </div>

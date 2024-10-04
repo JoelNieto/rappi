@@ -62,7 +62,7 @@ import { DashboardStore } from './stores/dashboard.store';
       @let loan = store.currentLoan();
       @if (loan) {
         <p-card>
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col md:flex-row items-center justify-between">
             <h1>Detalle de prestamo #{{ loan.id }}</h1>
             <div class="flex gap-2">
               <p-button
@@ -182,15 +182,16 @@ import { DashboardStore } from './stores/dashboard.store';
                       <td>
                         <p-button
                           text
-                          icon="pi pi-trash"
-                          rounded
-                          (onClick)="store.reversePayment(payment)"
-                        />
-                        <p-button
-                          text
                           icon="pi pi-print"
                           rounded
                           (onClick)="generatePaymentReceipt(payment)"
+                        />
+                        <p-button
+                          text
+                          icon="pi pi-trash"
+                          rounded
+                          severity="danger"
+                          (onClick)="store.reversePayment(payment)"
                         />
                       </td>
                     </tr>
@@ -316,7 +317,7 @@ export class LoanDetailsComponent implements OnInit, OnDestroy {
   }
 
   generatePaymentReceipt(payment: Payment) {
-    console.log(payment);
+    this.docGenerator.printPaymentReceipt(payment, this.store.currentLoan()!);
   }
 
   printLoan(loan: Loan) {
