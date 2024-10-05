@@ -267,6 +267,14 @@ import { DashboardStore } from './stores/dashboard.store';
             {{ totalPrice() | currency }}
           </div>
           <div class="input-group">
+            <label>Intereses</label>
+            {{ totalRate() | currency }}
+          </div>
+          <div class="input-group">
+            <label>Total a pagar</label>
+            {{ totalAmount() | currency }}
+          </div>
+          <div class="input-group">
             <label>Monto cuota</label>
             {{ installmentAmount() | currency }}
           </div>
@@ -382,7 +390,9 @@ export class LoanFormComponent implements OnInit {
     },
   );
 
-  totalAmount = computed(() => this.totalPrice() * (1 + this.rate() / 100));
+  totalRate = computed(() => this.totalPrice() * (this.rate() / 100));
+  totalAmount = computed(() => this.totalPrice() + this.totalRate());
+
   private router = inject(Router);
 
   protected projectedInstallments = computed<Installment[]>(() => {
@@ -439,8 +449,10 @@ export class LoanFormComponent implements OnInit {
     }
     const request = {
       ...this.form.getRawValue(),
-      price_base: this.totalAmount(),
+      price_base: this.totalPrice(),
       installments: this.projectedInstallments(),
+      installment_amount: this.installmentAmount(),
+      balance: this.totalAmount(),
     };
 
     this.store.createLoan(request).then((data) => {

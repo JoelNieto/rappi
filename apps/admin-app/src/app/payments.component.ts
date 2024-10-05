@@ -53,6 +53,11 @@ import { paymentsStore } from './stores/payments.store';
           <td>{{ payment.amount | currency }}</td>
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="5" class="text-center">Sin pagos registrados</td>
+        </tr>
+      </ng-template>
     </p-table>
   </p-card>`,
   styles: ``,

@@ -22,6 +22,8 @@ export type Loan = {
   payments?: Payment[];
   created_at: Date;
   status_id: number;
+  balance: number;
+  rates_amount: number;
 };
 
 export type LoanProduct = {

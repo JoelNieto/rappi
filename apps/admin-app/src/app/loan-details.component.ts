@@ -102,8 +102,16 @@ import { DashboardStore } from './stores/dashboard.store';
               <p>{{ loan.commerce }}</p>
             </div>
             <div>
-              <h2 class="mb-0 font-normal text-slate-500">Monto</h2>
+              <h2 class="mb-0 font-normal text-slate-500">Monto financiado</h2>
               <p>{{ loan.price_base | currency }}</p>
+            </div>
+            <div>
+              <h2 class="mb-0 font-normal text-slate-500">Intereses</h2>
+              <p>{{ loan.rates_amount | currency }}</p>
+            </div>
+            <div>
+              <h2 class="mb-0 font-normal text-slate-500">Saldo a la fecha</h2>
+              <p>{{ loan.balance | currency }}</p>
             </div>
             <div>
               <h2 class="mb-1 font-normal text-slate-500">Monto Vencido</h2>

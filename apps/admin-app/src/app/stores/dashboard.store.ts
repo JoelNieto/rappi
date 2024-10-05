@@ -458,14 +458,18 @@ export const DashboardStore = signalStore(
             .from('loan_payments')
             .insert(payment);
           await savePaidInstallments(paidInstallments);
+          const { error: error2 } = await supabase.client
+            .from('loans')
+            .update({ balance: loan.balance - payment.amount })
+            .eq('id', loan.id);
+          if (error || error2) {
+            throw error;
+          }
           toast.add({
             severity: 'success',
             summary: 'Éxito',
             detail: 'Pago aplicado correctamente',
           });
-          if (error) {
-            throw error;
-          }
         } catch (err) {
           console.error(err);
           toast.add({
@@ -513,6 +517,13 @@ export const DashboardStore = signalStore(
 
             try {
               await savePaidInstallments(reversedInstallments);
+              const { error } = await supabase.client
+                .from('loans')
+                .update({ balance: loan.balance + amount })
+                .eq('id', loan.id);
+              if (error) {
+                throw error;
+              }
             } catch (err) {
               console.error(err);
               toast.add({
