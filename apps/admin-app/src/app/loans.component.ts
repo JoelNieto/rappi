@@ -90,6 +90,7 @@ export class LoansComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.setCurrentLoan(null);
+    this.store.fetchLoans();
   }
 
   deleteLoan(id: number) {

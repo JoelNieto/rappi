@@ -479,6 +479,7 @@ export const DashboardStore = signalStore(
           });
           throw err;
         } finally {
+          getLoanById(state.selectedLoanId);
           patchState(state, { loading: false });
         }
       }
@@ -552,6 +553,7 @@ export const DashboardStore = signalStore(
               summary: 'Éxito',
               detail: 'Pago eliminado correctamente',
             });
+            getLoanById(state.selectedLoanId);
             patchState(state, { loading: false });
           },
         });

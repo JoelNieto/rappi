@@ -36,7 +36,7 @@ import { AuthStore } from '../stores/auth.store';
     class="h-svh flex justify-center items-center"
   >
     <p-card
-      class="w-full md:w-1/3 px-8 "
+      class="w-full lg:w-1/3 px-8 "
       header="Rappi Presta Admin"
       subheader="Iniciar sesion"
     >

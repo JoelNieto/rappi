@@ -453,6 +453,7 @@ export class LoanFormComponent implements OnInit {
       installments: this.projectedInstallments(),
       installment_amount: this.installmentAmount(),
       balance: this.totalAmount(),
+      rates_amount: this.totalRate(),
     };
 
     this.store.createLoan(request).then((data) => {

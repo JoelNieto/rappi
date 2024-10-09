@@ -1,10 +1,12 @@
-import { CurrencyPipe, DatePipe, JsonPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
+import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
-import { paymentsStore } from './stores/payments.store';
+import { DashboardStore } from './stores/dashboard.store';
+import { PaymentsStore } from './stores/payments.store';
 
 @Component({
   selector: 'app-payments',
@@ -16,10 +18,10 @@ import { paymentsStore } from './stores/payments.store';
     CurrencyPipe,
     DatePipe,
     FormsModule,
-    JsonPipe,
+    DropdownModule,
   ],
   template: `<p-card header="Pagos">
-    <div class="grid grid-cols-1 md:grid-cols-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
       <div class="input-group">
         <label for="startDate">Filtro de fecha</label>
         <p-calendar
@@ -30,13 +32,29 @@ import { paymentsStore } from './stores/payments.store';
           readonlyInput
         />
       </div>
+      <div class="input-group">
+        <label for="status">Vendedor</label>
+        <p-dropdown
+          placeholder="--Todos--"
+          [options]="dashboard.users()"
+          (onChange)="store.updateAgent($event.value)"
+          optionValue="id"
+          optionLabel="full_name"
+          showClear
+        />
+      </div>
+      <div class="flex flex-col justify-between">
+        <label for="status">Monto total</label>
+        <p class="mb-3 text-xl">{{ store.total() | currency }}</p>
+      </div>
     </div>
 
-    <p-table [value]="store.payments()">
+    <p-table [value]="store.payments()" [paginator]="true" [rows]="10">
       <ng-template pTemplate="header">
         <tr>
           <th>Fecha</th>
           <th>Prestamo</th>
+          <th>Vendedor</th>
           <th>Referencia</th>
           <th>Cliente</th>
           <th>Valor</th>
@@ -48,6 +66,7 @@ import { paymentsStore } from './stores/payments.store';
           @let client = loan.client;
           <td>{{ payment.payment_date | date: 'shortDate' }}</td>
           <td>{{ payment.loan.id }}</td>
+          <td>{{ loan.agent.full_name }}</td>
           <td>{{ payment.reference }}</td>
           <td>{{ client.first_name }} {{ client.last_name }}</td>
           <td>{{ payment.amount | currency }}</td>
@@ -64,7 +83,8 @@ import { paymentsStore } from './stores/payments.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentsComponent {
-  protected store = inject(paymentsStore);
+  protected store = inject(PaymentsStore);
+  protected dashboard = inject(DashboardStore);
   protected range = [this.store.startDate(), this.store.endDate()];
 
   protected async onRangeChange(dates: Date[]) {

@@ -1,7 +1,13 @@
 import { CurrencyPipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { Loan, Payment, Recurrence } from '@rappi/models';
-import { format } from 'date-fns';
+import {
+  Installment,
+  InstallmentStatus,
+  Loan,
+  Payment,
+  Recurrence,
+} from '@rappi/models';
+import { format, isBefore } from 'date-fns';
 import { es } from 'date-fns/locale';
 import * as pdfMake from 'pdfmake/build/pdfmake.js';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -25,10 +31,10 @@ export class DocGeneratorsService {
             },
             [
               {
-                text: 'Recibo de prestamo',
+                text: 'Recibo de préstamo',
                 color: '#333333',
                 width: '*',
-                fontSize: 28,
+                fontSize: 23,
                 bold: true,
                 alignment: 'right',
                 margin: [0, 0, 0, 15],
@@ -38,18 +44,18 @@ export class DocGeneratorsService {
                   {
                     columns: [
                       {
-                        text: 'No. prestamo',
+                        text: 'No. préstamo',
                         color: '#aaaaab',
                         bold: true,
                         width: '*',
-                        fontSize: 11,
+                        fontSize: 9,
                         alignment: 'right',
                       },
                       {
                         text: String(loan.id).padStart(5, '0'),
                         bold: true,
                         color: '#333333',
-                        fontSize: 11,
+                        fontSize: 9,
                         alignment: 'right',
                         width: 100,
                       },
@@ -58,11 +64,11 @@ export class DocGeneratorsService {
                   {
                     columns: [
                       {
-                        text: 'Fecha de prestamo',
+                        text: 'Fecha de préstamo',
                         color: '#aaaaab',
                         bold: true,
                         width: '*',
-                        fontSize: 11,
+                        fontSize: 9,
                         alignment: 'right',
                       },
                       {
@@ -71,7 +77,7 @@ export class DocGeneratorsService {
                         }),
                         bold: true,
                         color: '#333333',
-                        fontSize: 11,
+                        fontSize: 9,
                         alignment: 'right',
                         width: 100,
                       },
@@ -83,12 +89,12 @@ export class DocGeneratorsService {
                         text: 'Vendedor',
                         color: '#aaaaab',
                         bold: true,
-                        fontSize: 11,
+                        fontSize: 9,
                         alignment: 'right',
                         width: '*',
                       },
                       {
-                        text: '',
+                        text: loan.agent?.full_name ?? loan.agent?.username,
                         bold: true,
                         fontSize: 14,
                         alignment: 'right',
@@ -105,10 +111,10 @@ export class DocGeneratorsService {
         {
           columns: [
             {
-              text: 'Prestamo',
+              text: 'Préstamo',
               color: '#aaaaab',
               bold: true,
-              fontSize: 14,
+              fontSize: 11,
               alignment: 'left',
               margin: [0, 20, 0, 5],
             },
@@ -116,7 +122,7 @@ export class DocGeneratorsService {
               text: 'Cliente',
               color: '#aaaaab',
               bold: true,
-              fontSize: 14,
+              fontSize: 11,
               alignment: 'left',
               margin: [0, 20, 0, 5],
             },
@@ -214,7 +220,7 @@ export class DocGeneratorsService {
             body: [
               [
                 {
-                  text: 'Descripcion',
+                  text: 'Descripción',
                   fillColor: '#eaf2f5',
                   border: [false, true, false, true],
                   margin: [0, 3, 0, 3],
@@ -305,14 +311,14 @@ export class DocGeneratorsService {
             body: [
               [
                 {
-                  text: 'Payment Subtotal',
+                  text: 'Intereses',
                   border: [false, true, false, true],
                   alignment: 'right',
                   margin: [0, 3, 0, 3],
                 },
                 {
                   border: [false, true, false, true],
-                  text: currency.transform(subTotal, 'USD', 'symbol'),
+                  text: currency.transform(loan.rates_amount, 'USD', 'symbol'),
                   alignment: 'right',
                   fillColor: '#f5f5f5',
                   margin: [0, 3, 0, 3],
@@ -321,17 +327,21 @@ export class DocGeneratorsService {
 
               [
                 {
-                  text: 'Total Amount',
+                  text: 'Total a pagar',
                   bold: true,
-                  fontSize: 20,
+                  fontSize: 16,
                   alignment: 'right',
                   border: [false, false, false, true],
                   margin: [0, 3, 0, 3],
                 },
                 {
-                  text: currency.transform(subTotal, 'USD', 'symbol'),
+                  text: currency.transform(
+                    subTotal + loan.rates_amount,
+                    'USD',
+                    'symbol',
+                  ),
                   bold: true,
-                  fontSize: 20,
+                  fontSize: 16,
                   alignment: 'right',
                   border: [false, false, false, true],
                   fillColor: '#f5f5f5',
@@ -392,9 +402,29 @@ export class DocGeneratorsService {
       .open();
   }
 
+  isDueDate(installment: Installment) {
+    if (installment.paid_amount === installment.amount) {
+      return InstallmentStatus.Paid;
+    }
+
+    if (isBefore(new Date(), installment.due_date)) {
+      return InstallmentStatus.Pending;
+    }
+    return InstallmentStatus.Overdue;
+  }
+
   printPaymentReceipt(payment: Payment, loan?: Loan) {
     const currency = new CurrencyPipe('es-US', 'USD');
     loan = loan ?? payment.loan;
+    const overDueAmount = loan?.installments.reduce(
+      (acc: number, installment: Installment) => {
+        if (this.isDueDate(installment) === InstallmentStatus.Overdue) {
+          return acc + installment.amount - installment.paid_amount;
+        }
+        return acc;
+      },
+      0,
+    );
     const dd = {
       content: [
         {
@@ -419,18 +449,18 @@ export class DocGeneratorsService {
                   {
                     columns: [
                       {
-                        text: 'No. prestamo',
+                        text: 'No. préstamo',
                         color: '#aaaaab',
                         bold: true,
                         width: '*',
-                        fontSize: 11,
+                        fontSize: 9,
                         alignment: 'right',
                       },
                       {
                         text: String(loan?.id).padStart(5, '0'),
                         bold: true,
                         color: '#333333',
-                        fontSize: 11,
+                        fontSize: 9,
                         alignment: 'right',
                         width: 100,
                       },
@@ -444,7 +474,7 @@ export class DocGeneratorsService {
         {
           columns: [
             {
-              text: 'Prestamo',
+              text: 'Préstamo',
               color: '#aaaaab',
               bold: true,
               fontSize: 14,
@@ -526,7 +556,7 @@ export class DocGeneratorsService {
             body: [
               [
                 {
-                  text: 'Descripcion',
+                  text: 'Descripción',
                   fillColor: '#eaf2f5',
                   border: [false, true, false, true],
                   margin: [0, 3, 0, 3],
@@ -574,7 +604,6 @@ export class DocGeneratorsService {
           },
         },
         '\n',
-        '\n\n',
         {
           layout: {
             defaultBorder: false,
@@ -602,12 +631,6 @@ export class DocGeneratorsService {
             paddingRight: function () {
               return 10;
             },
-            paddingTop: function () {
-              return 3;
-            },
-            paddingBottom: function () {
-              return 3;
-            },
             fillColor: (_rowIndex: number, _node: any, _columnIndex: number) =>
               '#fff',
           },
@@ -617,19 +640,47 @@ export class DocGeneratorsService {
             body: [
               [
                 {
-                  text: 'Total',
-                  bold: true,
-                  fontSize: 13,
+                  text: 'Total pagado',
                   alignment: 'right',
                   border: [false, false, false, true],
                   margin: [0, 3, 0, 3],
                 },
                 {
                   text: currency.transform(payment.amount, 'USD', 'symbol'),
-                  bold: true,
-                  fontSize: 13,
                   alignment: 'right',
                   border: [false, false, false, true],
+                  fillColor: '#f5f5f5',
+                  margin: [0, 3, 0, 3],
+                },
+              ],
+              [
+                {
+                  text: 'Salvo vencido',
+                  alignment: 'right',
+                  border: [false, false, false, true],
+                  margin: [0, 3, 0, 3],
+                },
+                {
+                  text: currency.transform(overDueAmount ?? 0, 'USD', 'symbol'),
+                  alignment: 'right',
+                  border: [false, false, false, true],
+                  fillColor: '#f5f5f5',
+                  margin: [0, 3, 0, 3],
+                },
+              ],
+              [
+                {
+                  text: 'Saldo',
+                  bold: true,
+                  border: [false, true, false, true],
+                  alignment: 'right',
+                  margin: [0, 3, 0, 3],
+                },
+                {
+                  border: [false, true, false, true],
+                  bold: true,
+                  text: currency.transform(loan?.balance, 'USD', 'symbol'),
+                  alignment: 'right',
                   fillColor: '#f5f5f5',
                   margin: [0, 3, 0, 3],
                 },

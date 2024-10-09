@@ -19,6 +19,7 @@ type State = {
   payments: Payment[];
   startDate: Date;
   endDate: Date;
+  agentId: string | null;
 };
 
 const initialState: State = {
@@ -26,32 +27,51 @@ const initialState: State = {
   payments: [],
   startDate: startOfMonth(new Date()),
   endDate: endOfMonth(new Date()),
+  agentId: null,
 };
 
-export const paymentsStore = signalStore(
+export const PaymentsStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withComputed((state) => ({
-    total: computed(() =>
+  withComputed((state, supabase = inject(SupabaseService)) => {
+    const total = computed(() =>
       state.payments().reduce((acc, payment) => acc + payment.amount, 0),
-    ),
-    start: computed(() => format(state.startDate(), 'yyyy-MM-dd')),
-    end: computed(() => format(state.endDate(), 'yyyy-MM-dd')),
-    filter: computed(() => ({ star: state.startDate(), end: state.endDate() })),
-  })),
-  withMethods((state, supabase = inject(SupabaseService)) => {
+    );
+    const start = computed(() => format(state.startDate(), 'yyyy-MM-dd'));
+    const end = computed(() => format(state.endDate(), 'yyyy-MM-dd'));
+    const filter = computed(() => ({
+      star: state.startDate(),
+      end: state.endDate(),
+      agentId: state.agentId(),
+    }));
+    const query = computed(() => {
+      const query = state.agentId()
+        ? supabase.client
+            .from('loan_payments')
+            .select(
+              '*, loan:loans!inner(*, client:clients(id, first_name, last_name), agent:profiles(id, full_name, username))',
+            )
+            .gte('payment_date', start())
+            .lte('payment_date', end())
+            .eq('loans.created_by', state.agentId())
+        : supabase.client
+            .from('loan_payments')
+            .select(
+              '*, loan:loans(*, client:clients(id, first_name, last_name), agent:profiles(id, full_name, username))',
+            )
+            .gte('payment_date', start())
+            .lte('payment_date', end());
+      return query;
+    });
+    return { total, start, end, filter, query };
+  }),
+  withMethods((state) => {
     const fetchPayments = rxMethod<typeof state.filter>(
       pipe(
         tap(() => patchState(state, { loading: true })),
         filter(() => !!state.startDate() && !!state.endDate()),
         switchMap(() =>
-          from(
-            supabase.client
-              .from('loan_payments')
-              .select('*, loan:loans(*, client:clients(*))')
-              .gte('payment_date', state.start())
-              .lte('payment_date', state.end()),
-          ).pipe(
+          from(state.query()).pipe(
             map(({ data, error }) => {
               if (error) {
                 throw error;
@@ -72,10 +92,13 @@ export const paymentsStore = signalStore(
     );
 
     const updateDates = (startDate: Date, endDate: Date) => {
-      console.log({ startDate, endDate });
       patchState(state, { startDate, endDate });
     };
-    return { fetchPayments, updateDates };
+
+    const updateAgent = (agentId: string | null) => {
+      patchState(state, { agentId });
+    };
+    return { fetchPayments, updateDates, updateAgent };
   }),
   withHooks({
     onInit({ fetchPayments, filter }) {
