@@ -655,7 +655,7 @@ export class DocGeneratorsService {
               ],
               [
                 {
-                  text: 'Salvo vencido',
+                  text: 'Saldo vencido',
                   alignment: 'right',
                   border: [false, false, false, true],
                   margin: [0, 3, 0, 3],

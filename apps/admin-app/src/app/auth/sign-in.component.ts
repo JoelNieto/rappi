@@ -33,7 +33,7 @@ import { AuthStore } from '../stores/auth.store';
   template: ` <form
     [formGroup]="signInForm"
     (ngSubmit)="signIn()"
-    class="h-svh flex justify-center items-center"
+    class="h-svh flex justify-center items-center bg-slate-50"
   >
     <p-card
       class="w-full lg:w-1/3 px-8 "
@@ -43,11 +43,21 @@ import { AuthStore } from '../stores/auth.store';
       <div class="flex-col flex gap-4">
         <div class="input-group">
           <label for="email">Email</label>
-          <input id="email" formControlName="email" pInputText type="email" />
+          <input
+            id="email"
+            formControlName="email"
+            pInputText
+            type="email"
+            placeholder="Email del usuario"
+          />
         </div>
         <div class="input-group">
           <label for="password">Contraseña</label>
-          <p-password [feedback]="false" formControlName="password" />
+          <p-password
+            [feedback]="false"
+            formControlName="password"
+            placeholder="********"
+          />
         </div>
         <div class="flex flex-col md:flex-row justify-end gap-4 pt-4">
           <p-button
