@@ -1,22 +1,30 @@
-import { CurrencyPipe, JsonPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { CardModule } from 'primeng/card';
-import { from, map } from 'rxjs';
-import { SupabaseService } from './services/supabase.service';
+import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CardModule, CurrencyPipe, JsonPipe],
+  imports: [CardModule, CurrencyPipe],
   template: `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <p-card header="# Prestamos">
-      <div class="text-2xl font-semibold text-slate-700">{{ loanCount() }}</div>
+      <div class="text-2xl font-semibold text-slate-700">
+        {{ store.loansCount() }}
+      </div>
     </p-card>
     <p-card header="Total prestado">
       <div class="flex justify-between">
         <div class="text-2xl font-semibold text-slate-700">
-          {{ loanSum() | currency }}
+          {{ store.loansSum() | currency }}
+        </div>
+        <span class="pi pi-money-bill text-3xl "></span>
+      </div>
+    </p-card>
+    <p-card header="Total adeudado">
+      <div class="flex justify-between">
+        <div class="text-2xl font-semibold text-slate-700">
+          {{ store.debtSum() | currency }}
         </div>
         <span class="pi pi-money-bill text-3xl "></span>
       </div>
@@ -26,20 +34,5 @@ import { SupabaseService } from './services/supabase.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
-  private supabase = inject(SupabaseService);
-  loanCount = toSignal(
-    from(
-      this.supabase.client
-        .from('loans')
-        .select('*', { count: 'exact', head: true }),
-    ).pipe(map((response) => response.count)),
-    { initialValue: 0 },
-  );
-
-  loanSum = toSignal(
-    from(this.supabase.client.from('loans').select('price_base.sum()')).pipe(
-      map((res) => (res.data ? res.data[0].sum : 0)),
-    ),
-    { initialValue: 0 },
-  );
+  protected store = inject(DashboardStore);
 }

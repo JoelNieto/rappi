@@ -12,11 +12,12 @@ import { MenuModule } from 'primeng/menu';
 import { SupabaseService } from './services/supabase.service';
 import { AuthStore } from './stores/auth.store';
 import { DashboardStore } from './stores/dashboard.store';
+import { PaymentsStore } from './stores/payments.store';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  providers: [DashboardStore],
+  providers: [DashboardStore, PaymentsStore],
   imports: [
     RouterOutlet,
     RouterLink,

@@ -64,9 +64,9 @@ import { DashboardStore } from './stores/dashboard.store';
             <label for="client">Cliente</label>
             <p-dropdown
               formControlName="client_id"
-              [options]="store.clients()"
+              [options]="store.clientsList()"
               [filter]="true"
-              filterBy="first_name,last_name,document_id"
+              filterBy="full_name,document_id"
               optionLabel="name"
               optionValue="id"
               placeholder="Seleccione un cliente"
@@ -75,7 +75,7 @@ import { DashboardStore } from './stores/dashboard.store';
                 @if (selected) {
                   <div class="flex items-center justify-between">
                     <div>
-                      {{ selected.first_name }} {{ selected.last_name }}
+                      {{ selected.full_name }}
                     </div>
                     <div class="text-sm text-slate-500">
                       {{ selected.document_id }}
@@ -85,7 +85,7 @@ import { DashboardStore } from './stores/dashboard.store';
               </ng-template>
               <ng-template pTemplate="item" let-client>
                 <div class="flex items-center justify-between">
-                  <div>{{ client.first_name }} {{ client.last_name }}</div>
+                  <div>{{ client.full_name }}</div>
                   <div class="text-sm text-slate-500">
                     {{ client.document_id }}
                   </div>

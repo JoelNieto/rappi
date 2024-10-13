@@ -1,8 +1,9 @@
-import { inject } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import { tapResponse } from '@ngrx/operators';
 import {
   patchState,
   signalStore,
+  withComputed,
   withHooks,
   withMethods,
   withState,
@@ -20,6 +21,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { filter, from, map, pipe, switchMap, tap } from 'rxjs';
 import { SupabaseService } from '../services/supabase.service';
 import { omit } from '../services/utils';
+import { AuthStore } from './auth.store';
 
 type State = {
   clients: Partial<Client>[];
@@ -43,20 +45,41 @@ export const initialState: State = {
 
 export const DashboardStore = signalStore(
   withState(initialState),
+  withComputed((state) => {
+    const clientsList = computed(() =>
+      state.clients().map((client) => ({
+        ...client,
+        full_name: `${client.first_name} ${client.last_name}`,
+      })),
+    );
+    const loansCount = computed(() => state.loans().length);
+    const loansSum = computed(() => {
+      return state.loans().reduce((acc, loan) => acc + loan.price_base, 0);
+    });
+    const debtSum = computed(() => {
+      return state.loans().reduce((acc, loan) => acc + loan.balance, 0);
+    });
+    return { clientsList, loansCount, debtSum, loansSum };
+  }),
   withMethods(
     (
       state,
+      auth = inject(AuthStore),
       supabase = inject(SupabaseService),
       confirmationService = inject(ConfirmationService),
       toast = inject(MessageService),
     ) => {
       async function fetchClients() {
         patchState(state, { loading: true });
-        const { data, error } = await supabase.client
+        let query = supabase.client
           .from('clients')
           .select(
             'first_name, last_name, id, email, phone_number, salary, document_id, created_at',
           );
+        if (!auth.isAdmin()) {
+          query = query.eq('created_by', auth.user()?.id);
+        }
+        const { data, error } = await query;
         if (error) {
           console.error(error);
           patchState(state, { loading: false });
@@ -87,9 +110,13 @@ export const DashboardStore = signalStore(
 
       async function fetchLoans() {
         patchState(state, { loading: true });
-        const { data, error } = await supabase.client
+        let query = supabase.client
           .from('loans')
           .select('*, client:clients(*), agent:profiles(*)');
+        if (!auth.isAdmin()) {
+          query = query.eq('created_by', auth.user()?.id);
+        }
+        const { data, error } = await query;
         if (error) {
           console.error(error);
           patchState(state, { loading: false });
@@ -397,6 +424,14 @@ export const DashboardStore = signalStore(
       }
 
       async function deleteUser(userId: string) {
+        if (userId === auth.user()?.id) {
+          toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No puedes eliminar tu propio usuario',
+          });
+          return;
+        }
         confirmationService.confirm({
           message: '¿Está seguro de eliminar este usuario?',
           header: 'Confirmación',

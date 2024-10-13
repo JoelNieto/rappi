@@ -20,7 +20,10 @@
 @layer tw-base {
 }
 
-body :not(.p-overlay):not(.p-datepicker):not(.p-menu-overlay) {
+body
+  :not(.p-overlay):not(.p-datepicker):not(.p-menu-overlay):not(
+    .p-column-filter-overlay
+  ) {
   @apply transition-all duration-300 ease-in-out;
 }
 

@@ -52,12 +52,22 @@ import { PaymentsStore } from './stores/payments.store';
     <p-table [value]="store.payments()" [paginator]="true" [rows]="10">
       <ng-template pTemplate="header">
         <tr>
-          <th>Fecha</th>
-          <th>Prestamo</th>
-          <th>Vendedor</th>
-          <th>Referencia</th>
-          <th>Cliente</th>
-          <th>Valor</th>
+          <th pSortableColumn="payment_date">
+            Fecha <p-sortIcon field="payment_date" />
+          </th>
+          <th pSortableColumn="loan.id">
+            Prestamo <p-sortIcon field="loan" />
+          </th>
+          <th pSortableColumn="loan.agent.full_name">
+            Vendedor <p-sortIcon field="loan.agent" />
+          </th>
+          <th pSortableColumn="reference">
+            Referencia <p-sortIcon field="reference" />
+          </th>
+          <th pSortableColumn="client.first_name">
+            Cliente <p-sortIcon field="client" />
+          </th>
+          <th pSortableColumn="amount">Valor <p-sortIcon field="amount" /></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-payment>

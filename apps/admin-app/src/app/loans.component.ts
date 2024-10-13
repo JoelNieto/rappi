@@ -5,9 +5,12 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { FilterService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { TableModule } from 'primeng/table';
 import { DashboardStore } from './stores/dashboard.store';
 
@@ -21,6 +24,8 @@ import { DashboardStore } from './stores/dashboard.store';
     DatePipe,
     CurrencyPipe,
     CardModule,
+    MultiSelectModule,
+    FormsModule,
   ],
   template: `<p-card>
     <ng-template pTemplate="header">
@@ -39,16 +44,92 @@ import { DashboardStore } from './stores/dashboard.store';
       [paginator]="true"
       [rows]="10"
       styleClass="p-datatable-striped"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      [tableStyle]="{ 'min-width': '75rem' }"
     >
       <ng-template pTemplate="header">
         <tr>
-          <th>#</th>
-          <th>Comercio</th>
-          <th>Cliente</th>
-          <th>Fecha de creación</th>
-          <th>Monto</th>
-          <th>Asignado a</th>
+          <th pSortableColumn="id" style="width:22%">
+            # <p-sortIcon field="id" />
+          </th>
+          <th pSortableColumn="commerce">
+            Comercio <p-sortIcon field="commerce" />
+          </th>
+          <th pSortableColumn="client.first_name">
+            Cliente <p-sortIcon field="client" />
+          </th>
+          <th pSortableColumn="created_at">
+            Fecha de creación <p-sortIcon field="created_at" />
+          </th>
+          <th pSortableColumn="price_base">
+            Monto <p-sortIcon field="price_base" />
+          </th>
+          <th pSortableColumn="balance">
+            Saldo <p-sortIcon field="balance" />
+          </th>
+          <th pSortableColumn="agent.full_name">
+            Asignado a <p-sortIcon field="agent" />
+          </th>
           <th>Acciones</th>
+        </tr>
+        <tr>
+          <th>
+            <p-columnFilter
+              type="text"
+              field="id"
+              placeholder="Buscar por id"
+              ariaLabel="Filter ID"
+            />
+          </th>
+          <th>
+            <p-columnFilter
+              type="text"
+              field="commerce"
+              placeholder="Buscar por comercio"
+              ariaLabel="Filter Commerce"
+            />
+          </th>
+          <th>
+            <p-columnFilter
+              type="text"
+              field="client"
+              placeholder="Buscar por cliente"
+              ariaLabel="Filter Client"
+            />
+          </th>
+          <th>
+            <p-columnFilter
+              field="agent"
+              matchMode="custom-filter"
+              [showMenu]="false"
+            >
+              <ng-template
+                pTemplate="filter"
+                let-value
+                let-filter="filterCallback"
+              >
+                <p-multiSelect
+                  [ngModel]="value"
+                  [options]="store.users()"
+                  placeholder="TODOS"
+                  (onChange)="filter($event.value)"
+                  optionLabel="full_name"
+                  appendTo="body"
+                />
+              </ng-template>
+            </p-columnFilter>
+          </th>
+          <th></th>
+          <th></th>
+          <th>
+            <p-columnFilter
+              type="text"
+              field="agent"
+              placeholder="Buscar por agente"
+              ariaLabel="Filter Agent"
+            />
+          </th>
+          <th></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-loan>
@@ -58,6 +139,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <td>{{ loan.client?.first_name }} {{ loan.client?.last_name }}</td>
           <td>{{ loan.created_at | date: 'dd/MM/yyyy' }}</td>
           <td>{{ loan.price_base | currency }}</td>
+          <td>{{ loan.balance | currency }}</td>
           <td>{{ loan.agent?.full_name ?? loan.agent?.username }}</td>
           <td>
             <div class="flex gap-2">
@@ -87,8 +169,23 @@ import { DashboardStore } from './stores/dashboard.store';
 })
 export class LoansComponent implements OnInit {
   protected store = inject(DashboardStore);
+  private filterService = inject(FilterService);
 
   ngOnInit(): void {
+    this.filterService.register(
+      'custom-filter',
+      (value: { id: any } | null | undefined, filter: any[]) => {
+        if (filter === undefined || filter === null || !filter.length) {
+          return true;
+        }
+
+        if (value === undefined || value === null) {
+          return false;
+        }
+
+        return filter.map((x) => x.id).includes(value.id);
+      },
+    );
     this.store.setCurrentLoan(null);
     this.store.fetchLoans();
   }
