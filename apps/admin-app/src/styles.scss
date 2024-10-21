@@ -76,3 +76,7 @@ h1 {
 .p-card .p-card-title {
   @apply text-slate-700 font-medium;
 }
+
+.link {
+  @apply text-indigo-500 hover:text-indigo-700 cursor-pointer hover:underline;
+}

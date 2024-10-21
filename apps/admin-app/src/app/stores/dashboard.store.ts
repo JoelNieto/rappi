@@ -97,7 +97,9 @@ export const DashboardStore = signalStore(
         patchState(state, { loading: true });
         const { data, error } = await supabase.client
           .from('clients')
-          .select('*, documents:client_documents(*)')
+          .select(
+            '*, documents:client_documents(*), loans(*, agent:profiles(*))',
+          )
           .eq('id', id)
           .single();
         if (error) {

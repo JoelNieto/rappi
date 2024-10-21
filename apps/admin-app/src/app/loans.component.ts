@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Client } from '@rappi/models';
 import { FilterService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -87,14 +88,17 @@ import { DashboardStore } from './stores/dashboard.store';
               field="commerce"
               placeholder="Buscar por comercio"
               ariaLabel="Filter Commerce"
+              [showMenu]="false"
             />
           </th>
           <th>
             <p-columnFilter
               type="text"
               field="client"
+              matchMode="client-filter"
               placeholder="Buscar por cliente"
               ariaLabel="Filter Client"
+              [showMenu]="false"
             />
           </th>
           <th>
@@ -136,7 +140,11 @@ import { DashboardStore } from './stores/dashboard.store';
         <tr>
           <td>{{ loan.id }}</td>
           <td>{{ loan.commerce }}</td>
-          <td>{{ loan.client?.first_name }} {{ loan.client?.last_name }}</td>
+          <td>
+            <a routerLink="/clients/{{ loan.client?.id }}" class="link"
+              >{{ loan.client?.first_name }} {{ loan.client?.last_name }}</a
+            >
+          </td>
           <td>{{ loan.created_at | date: 'dd/MM/yyyy' }}</td>
           <td>{{ loan.price_base | currency }}</td>
           <td>{{ loan.balance | currency }}</td>
@@ -184,6 +192,23 @@ export class LoansComponent implements OnInit {
         }
 
         return filter.map((x) => x.id).includes(value.id);
+      },
+    );
+
+    this.filterService.register(
+      'client-filter',
+      (value: Partial<Client>, filter: string) => {
+        if (filter === undefined || filter === null || !filter.length) {
+          return true;
+        }
+
+        if (value === undefined || value === null) {
+          return false;
+        }
+        return (
+          value.first_name?.toLowerCase().includes(filter.toLowerCase()) ||
+          value.last_name?.toLowerCase().includes(filter.toLowerCase())
+        );
       },
     );
     this.store.setCurrentLoan(null);

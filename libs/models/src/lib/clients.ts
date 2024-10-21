@@ -1,3 +1,4 @@
+import { Loan } from './loans';
 import { Profile } from './profiles';
 
 export type Client = {
@@ -15,6 +16,7 @@ export type Client = {
   created_by?: string;
   user?: Profile;
   documents?: Attachment[];
+  loans?: Loan[];
 };
 
 export type Attachment = {

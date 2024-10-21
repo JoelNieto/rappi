@@ -1,3 +1,4 @@
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -16,7 +17,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -44,6 +45,9 @@ import { DashboardStore } from './stores/dashboard.store';
     CardModule,
     FileUploadModule,
     TableModule,
+    DatePipe,
+    CurrencyPipe,
+    RouterLink,
   ],
   template: `
     <p-card header="Datos del cliente">
@@ -130,7 +134,7 @@ import { DashboardStore } from './stores/dashboard.store';
         </div>
 
         <div class="input-group md:col-span-2 lg:col-span-4">
-          <label for="notes">Documentacion</label>
+          <label for="notes">Documentación</label>
           <p-fileUpload
             #fileUpload
             customUpload
@@ -177,6 +181,65 @@ import { DashboardStore } from './stores/dashboard.store';
             </ng-template>
           </p-fileUpload>
         </div>
+        @if (clientId()) {
+          <div class="flex flex-col md:col-span-2 lg:col-span-4">
+            <div class="flex justify-between items-center">
+              <h2>Prestamos</h2>
+              <p-button
+                label="Nuevo"
+                icon="pi pi-plus"
+                routerLink="/loans/new"
+                [queryParams]="{ clientId: clientId() }"
+              />
+            </div>
+            <p-table
+              [value]="store.selectedClient()?.loans ?? []"
+              [paginator]="true"
+              [rows]="5"
+              styleClass="p-datatable-striped"
+              [tableStyle]="{ 'min-width': '75rem' }"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th pSortableColumn="id">ID <p-sortIcon field="id" /></th>
+                  <th pSortableColumn="commerce">
+                    Comercio <p-sortIcon field="commerce" />
+                  </th>
+                  <th pSortableColumn="created_at">
+                    Fecha de creación <p-sortIcon field="created_at" />
+                  </th>
+                  <th pSortableColumn="price_base">
+                    Monto <p-sortIcon field="price_base" />
+                  </th>
+                  <th pSortableColumn="balance">
+                    Saldo <p-sortIcon field="balance" />
+                  </th>
+                  <th pSortableColumn="agent.full_name">
+                    Asignado a <p-sortIcon field="agent" />
+                  </th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-loan>
+                <tr>
+                  <td>
+                    <a routerLink="/loans/{{ loan.id }}" class="link">{{
+                      loan.id
+                    }}</a>
+                  </td>
+                  <td>{{ loan.commerce }}</td>
+                  <td>{{ loan.created_at | date: 'dd/MM/yyyy' }}</td>
+                  <td>
+                    {{ loan.price_base | currency: 'USD' : 'symbol' : '1.0-0' }}
+                  </td>
+                  <td>
+                    {{ loan.balance | currency: 'USD' : 'symbol' : '1.0-0' }}
+                  </td>
+                  <td>{{ loan.agent?.full_name }}</td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        }
         <div
           class="flex md:flex-row justify-end flex-col gap-2 md:col-span-2 lg:col-span-4"
         >

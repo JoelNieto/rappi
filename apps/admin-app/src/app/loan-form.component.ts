@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   inject,
+  input,
   OnInit,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -337,6 +338,8 @@ export class LoanFormComponent implements OnInit {
     }),
   });
 
+  clientId = input<string>();
+
   protected readonly store = inject(DashboardStore);
   private readonly toast = inject(MessageService);
 
@@ -430,6 +433,10 @@ export class LoanFormComponent implements OnInit {
 
   ngOnInit() {
     this.addProduct();
+    if (this.clientId()) {
+      this.form.controls.client_id.setValue(this.clientId()!);
+      this.form.controls.client_id.disable();
+    }
   }
 
   get products() {

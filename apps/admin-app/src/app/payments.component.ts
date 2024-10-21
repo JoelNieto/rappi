@@ -1,6 +1,7 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -19,6 +20,7 @@ import { PaymentsStore } from './stores/payments.store';
     DatePipe,
     FormsModule,
     DropdownModule,
+    RouterLink,
   ],
   template: `<p-card header="Pagos">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
@@ -75,10 +77,18 @@ import { PaymentsStore } from './stores/payments.store';
           @let loan = payment.loan;
           @let client = loan.client;
           <td>{{ payment.payment_date | date: 'shortDate' }}</td>
-          <td>{{ payment.loan.id }}</td>
+          <td>
+            <a routerLink="/loans/{{ payment.loan.id }}" class="link">{{
+              payment.loan.id
+            }}</a>
+          </td>
           <td>{{ loan.agent.full_name }}</td>
           <td>{{ payment.reference }}</td>
-          <td>{{ client.first_name }} {{ client.last_name }}</td>
+          <td>
+            <a routerLink="/clients/{{ client.id }}" class="link"
+              >{{ client.first_name }} {{ client.last_name }}</a
+            >
+          </td>
           <td>{{ payment.amount | currency }}</td>
         </tr>
       </ng-template>
