@@ -39,7 +39,12 @@ import { UserFormComponent } from './user-form.component';
           (onClick)="inviteUser()"
         />
       </div>
-      <p-table [value]="users()" styleClass="p-datatable-striped">
+      <p-table
+        [value]="users()"
+        styleClass="p-datatable-striped"
+        [paginator]="true"
+        [rows]="10"
+      >
         <ng-template pTemplate="header">
           <tr>
             <th pSortableColumn="full_name">

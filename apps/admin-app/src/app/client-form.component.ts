@@ -222,7 +222,7 @@ import { DashboardStore } from './stores/dashboard.store';
               <ng-template pTemplate="body" let-loan>
                 <tr>
                   <td>
-                    <a routerLink="/loans/{{ loan.id }}" class="link">{{
+                    <a routerLink="/loans/{{ loan.id }}" class="pill">{{
                       loan.id
                     }}</a>
                   </td>

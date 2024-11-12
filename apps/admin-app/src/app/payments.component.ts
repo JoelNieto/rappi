@@ -2,10 +2,12 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { format } from 'date-fns';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
 import { TableModule } from 'primeng/table';
+import { utils, writeFile } from 'xlsx';
 import { DashboardStore } from './stores/dashboard.store';
 import { PaymentsStore } from './stores/payments.store';
 
@@ -23,7 +25,7 @@ import { PaymentsStore } from './stores/payments.store';
     RouterLink,
   ],
   template: `<p-card header="Pagos">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div class="input-group">
         <label for="startDate">Filtro de fecha</label>
         <p-calendar
@@ -48,6 +50,14 @@ import { PaymentsStore } from './stores/payments.store';
       <div class="flex flex-col justify-between">
         <label for="status">Monto total</label>
         <p class="mb-3 text-xl">{{ store.total() | currency }}</p>
+      </div>
+      <div class="flex items-center gap-2 ">
+        <p-button
+          icon="pi pi-file-excel"
+          label="Exportar"
+          severity="success"
+          (onClick)="generateReport()"
+        />
       </div>
     </div>
 
@@ -78,7 +88,7 @@ import { PaymentsStore } from './stores/payments.store';
           @let client = loan.client;
           <td>{{ payment.payment_date | date: 'shortDate' }}</td>
           <td>
-            <a routerLink="/loans/{{ payment.loan.id }}" class="link">{{
+            <a routerLink="/loans/{{ payment.loan.id }}" class="pill">{{
               payment.loan.id
             }}</a>
           </td>
@@ -112,5 +122,23 @@ export class PaymentsComponent {
       return;
     }
     this.store.updateDates(dates[0], dates[1]);
+  }
+
+  generateReport() {
+    const items = this.store.payments().map((payment) => ({
+      Fecha: payment.payment_date,
+      Prestamo: payment.loan?.id,
+      Vendedor: payment.loan?.agent?.full_name,
+      Referencia: payment.reference,
+      Cliente: `${payment.loan?.client?.first_name} ${payment.loan?.client?.last_name}`,
+      Valor: payment.amount,
+    }));
+    const ws = utils.json_to_sheet(items);
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, `PAGOS`);
+    writeFile(
+      wb,
+      `PAGOS_${format(this.store.startDate(), 'dd_MM_YYY')}_${format(this.store.endDate(), 'dd_MM_YYYY')}.xlsx`,
+    );
   }
 }

@@ -60,7 +60,9 @@ import { DashboardStore } from './stores/dashboard.store';
       </p-card>
     } @else {
       @let loan = store.currentLoan();
+
       @if (loan) {
+        @let client = loan.client!;
         <p-card>
           <div class="flex flex-col md:flex-row items-center justify-between">
             <h1>Detalle de prestamo #{{ loan.id }}</h1>
@@ -91,10 +93,10 @@ import { DashboardStore } from './stores/dashboard.store';
           <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
               <h2 class="mb-1 font-normal text-slate-500">Cliente</h2>
-              <p>
-                {{ loan.client?.first_name }}
-                {{ loan?.client?.last_name }}
-              </p>
+              <a class="link" routerLink="/clients/{{ client.id }}">
+                {{ client.first_name }}
+                {{ client.last_name }}
+              </a>
             </div>
 
             <div>

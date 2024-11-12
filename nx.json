@@ -99,9 +99,9 @@
       "standalone": true,
       "inlineStyle": true,
       "inlineTemplate": true,
-      "changeDetection": "OnPush",
-      "nameAndDirectoryFormat": "as-provided"
+      "changeDetection": "OnPush"
     }
   },
-  "nxCloudId": "66df8cffbf4317d5d4b49096"
+  "nxCloudId": "66df8cffbf4317d5d4b49096",
+  "useLegacyCache": true
 }

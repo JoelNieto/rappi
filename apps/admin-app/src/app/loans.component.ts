@@ -91,16 +91,11 @@ import { DashboardStore } from './stores/dashboard.store';
               [showMenu]="false"
             />
           </th>
-          <th>
-            <p-columnFilter
-              type="text"
-              field="client"
-              matchMode="client-filter"
-              placeholder="Buscar por cliente"
-              ariaLabel="Filter Client"
-              [showMenu]="false"
-            />
-          </th>
+          <th></th>
+
+          <th></th>
+          <th></th>
+          <th></th>
           <th>
             <p-columnFilter
               field="agent"
@@ -124,16 +119,6 @@ import { DashboardStore } from './stores/dashboard.store';
             </p-columnFilter>
           </th>
           <th></th>
-          <th></th>
-          <th>
-            <p-columnFilter
-              type="text"
-              field="agent"
-              placeholder="Buscar por agente"
-              ariaLabel="Filter Agent"
-            />
-          </th>
-          <th></th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-loan>
@@ -141,7 +126,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <td>{{ loan.id }}</td>
           <td>{{ loan.commerce }}</td>
           <td>
-            <a routerLink="/clients/{{ loan.client?.id }}" class="link"
+            <a routerLink="/clients/{{ loan.client?.id }}" class="pill"
               >{{ loan.client?.first_name }} {{ loan.client?.last_name }}</a
             >
           </td>
