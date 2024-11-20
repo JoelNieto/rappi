@@ -146,7 +146,6 @@ export class PaymentsComponent implements OnInit {
     this.filterService.register(
       'client-filter',
       (value: Partial<Client>, filter: string) => {
-        console.log({ value, filter });
         if (filter === undefined || filter === null || !filter.length) {
           return true;
         }
