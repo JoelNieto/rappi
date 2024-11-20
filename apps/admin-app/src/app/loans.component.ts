@@ -91,7 +91,16 @@ import { DashboardStore } from './stores/dashboard.store';
               [showMenu]="false"
             />
           </th>
-          <th></th>
+          <th>
+            <p-columnFilter
+              type="text"
+              field="client"
+              matchMode="client-filter"
+              placeholder="Buscar por cliente"
+              ariaLabel="Filter Commerce"
+              [showMenu]="false"
+            />
+          </th>
 
           <th></th>
           <th></th>

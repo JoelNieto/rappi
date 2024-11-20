@@ -1,8 +1,15 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Client } from '@rappi/models';
 import { format } from 'date-fns';
+import { FilterService } from 'primeng/api';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -81,6 +88,23 @@ import { PaymentsStore } from './stores/payments.store';
           </th>
           <th pSortableColumn="amount">Valor <p-sortIcon field="amount" /></th>
         </tr>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th>
+            <p-columnFilter
+              type="text"
+              field="loan.client"
+              matchMode="client-filter"
+              placeholder="Buscar por cliente"
+              ariaLabel="Filter Commerce"
+              [showMenu]="false"
+            />
+          </th>
+          <th></th>
+        </tr>
       </ng-template>
       <ng-template pTemplate="body" let-payment>
         <tr>
@@ -112,10 +136,32 @@ import { PaymentsStore } from './stores/payments.store';
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PaymentsComponent {
+export class PaymentsComponent implements OnInit {
   protected store = inject(PaymentsStore);
   protected dashboard = inject(DashboardStore);
   protected range = [this.store.startDate(), this.store.endDate()];
+  private filterService = inject(FilterService);
+
+  ngOnInit(): void {
+    this.filterService.register(
+      'client-filter',
+      (value: Partial<Client>, filter: string) => {
+        console.log({ value, filter });
+        if (filter === undefined || filter === null || !filter.length) {
+          return true;
+        }
+
+        if (value === undefined || value === null) {
+          return false;
+        }
+
+        return (
+          value.first_name?.toLowerCase().includes(filter.toLowerCase()) ||
+          value.last_name?.toLowerCase().includes(filter.toLowerCase())
+        );
+      },
+    );
+  }
 
   protected async onRangeChange(dates: Date[]) {
     if (!dates || !dates[1]) {
