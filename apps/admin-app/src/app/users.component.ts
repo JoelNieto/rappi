@@ -19,19 +19,18 @@ import { DashboardStore } from './stores/dashboard.store';
 import { UserFormComponent } from './user-form.component';
 
 @Component({
-  selector: 'app-users',
-  standalone: true,
-  imports: [
-    CardModule,
-    TableModule,
-    RolePipe,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    ReactiveFormsModule,
-  ],
-  providers: [DynamicDialogRef, DialogService],
-  template: `<p-card header="Usuario" subheader="Administracion de accesos">
+    selector: 'app-users',
+    imports: [
+        CardModule,
+        TableModule,
+        RolePipe,
+        ButtonModule,
+        DialogModule,
+        InputTextModule,
+        ReactiveFormsModule,
+    ],
+    providers: [DynamicDialogRef, DialogService],
+    template: `<p-card header="Usuario" subheader="Administracion de accesos">
       <div class="flex justify-end">
         <p-button
           label="Invitar usuario"
@@ -108,9 +107,8 @@ import { UserFormComponent } from './user-form.component';
         />
       </div>
     </p-dialog> `,
-
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UsersComponent {
   protected loading = signal(false);

@@ -32,25 +32,24 @@ import { FileUrlPipe } from './pipes/file-url.pipe';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-  selector: 'app-loan-details',
-  standalone: true,
-  imports: [
-    SkeletonModule,
-    DatePipe,
-    CurrencyPipe,
-    TableModule,
-    ButtonModule,
-    RouterLink,
-    TabViewModule,
-    DropdownModule,
-    TagModule,
-    CardModule,
-    AsyncPipe,
-    FileUrlPipe,
-    FormsModule,
-  ],
-  providers: [DynamicDialogRef, DialogService],
-  template: `@if (store.loading()) {
+    selector: 'app-loan-details',
+    imports: [
+        SkeletonModule,
+        DatePipe,
+        CurrencyPipe,
+        TableModule,
+        ButtonModule,
+        RouterLink,
+        TabViewModule,
+        DropdownModule,
+        TagModule,
+        CardModule,
+        AsyncPipe,
+        FileUrlPipe,
+        FormsModule,
+    ],
+    providers: [DynamicDialogRef, DialogService],
+    template: `@if (store.loading()) {
       <p-card>
         <p-skeleton styleClass="mb-2" />
         <p-skeleton width="10rem" styleClass="mb-2" />
@@ -266,8 +265,8 @@ import { DashboardStore } from './stores/dashboard.store';
         </p-card>
       }
     } `,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoanDetailsComponent implements OnInit, OnDestroy {
   protected store = inject(DashboardStore);

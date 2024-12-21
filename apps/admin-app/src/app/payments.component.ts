@@ -2,6 +2,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
 } from '@angular/core';
@@ -10,6 +11,7 @@ import { RouterLink } from '@angular/router';
 import { Client } from '@rappi/models';
 import { format } from 'date-fns';
 import { FilterService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -20,7 +22,6 @@ import { PaymentsStore } from './stores/payments.store';
 
 @Component({
   selector: 'app-payments',
-  standalone: true,
   imports: [
     TableModule,
     CalendarModule,
@@ -30,6 +31,7 @@ import { PaymentsStore } from './stores/payments.store';
     FormsModule,
     DropdownModule,
     RouterLink,
+    Button,
   ],
   template: `<p-card header="Pagos">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -68,7 +70,7 @@ import { PaymentsStore } from './stores/payments.store';
       </div>
     </div>
 
-    <p-table [value]="store.payments()" [paginator]="true" [rows]="10">
+    <p-table [value]="payments()" [paginator]="true" [rows]="10">
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="payment_date">
@@ -141,6 +143,7 @@ export class PaymentsComponent implements OnInit {
   protected dashboard = inject(DashboardStore);
   protected range = [this.store.startDate(), this.store.endDate()];
   private filterService = inject(FilterService);
+  public payments = computed(() => [...this.store.payments()]);
 
   ngOnInit(): void {
     this.filterService.register(

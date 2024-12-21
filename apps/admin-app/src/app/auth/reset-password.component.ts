@@ -12,10 +12,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SupabaseService } from '../services/supabase.service';
 
 @Component({
-  selector: 'app-reset-password',
-  standalone: true,
-  imports: [CardModule, InputTextModule, ButtonModule, ReactiveFormsModule],
-  template: `<div class="h-svh flex justify-center items-center">
+    selector: 'app-reset-password',
+    imports: [CardModule, InputTextModule, ButtonModule, ReactiveFormsModule],
+    template: `<div class="h-svh flex justify-center items-center">
     <p-card
       class="w-full md:w-1/3 px-8"
       header="Rappi Presta Admin"
@@ -41,8 +40,8 @@ import { SupabaseService } from '../services/supabase.service';
       </div>
     </p-card>
   </div> `,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPasswordComponent {
   private supabase = inject(SupabaseService);

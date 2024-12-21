@@ -1,4 +1,4 @@
-import { AsyncPipe, JsonPipe, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,8 +7,8 @@ import {
 } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MenuItem } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { MenuModule } from 'primeng/menu';
+import { Button } from 'primeng/button';
+import { Menu } from 'primeng/menu';
 import { SupabaseService } from './services/supabase.service';
 import { AuthStore } from './stores/auth.store';
 import { DashboardStore } from './stores/dashboard.store';
@@ -16,18 +16,8 @@ import { PaymentsStore } from './stores/payments.store';
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
   providers: [DashboardStore, PaymentsStore],
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    MenuModule,
-    JsonPipe,
-    AsyncPipe,
-    ButtonModule,
-    NgClass,
-  ],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Menu, Button, NgClass],
   template: `
     <nav
       class="bg-white border border-b-slate-200 flex fixed z-30 w-full items-center justify-between px-4 py-3"

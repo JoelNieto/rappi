@@ -12,8 +12,10 @@ import {
   withComponentInputBinding,
   withViewTransitions,
 } from '@angular/router';
+import Aura from '@primeng/themes/aura';
+import { providePrimeNG } from 'primeng/config';
+import es from '../../public/i18n/es.json';
 import { appRoutes } from './app.routes';
-
 registerLocaleData(localeEs, 'es-US');
 
 export const appConfig: ApplicationConfig = {
@@ -25,6 +27,19 @@ export const appConfig: ApplicationConfig = {
       withComponentInputBinding(),
     ),
     provideAnimationsAsync(),
+    providePrimeNG({
+      theme: {
+        preset: Aura,
+        options: {
+          cssLayerL: {
+            name: 'primeng',
+            order:
+              'tw-base, primeng, tw-components, tw-utilities, tw-variants;',
+          },
+        },
+      },
+      translation: es,
+    }),
     provideHttpClient(),
     { provide: LOCALE_ID, useValue: 'es-US' },
   ],

@@ -8,20 +8,19 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { DashboardStore } from './stores/dashboard.store';
 @Component({
-  selector: 'app-clients',
-  standalone: true,
-  imports: [
-    TableModule,
-    ButtonModule,
-    DialogModule,
-    InputTextModule,
-    RouterLink,
-    CurrencyPipe,
-    DatePipe,
-    RouterLink,
-    CardModule,
-  ],
-  template: `<p-card>
+    selector: 'app-clients',
+    imports: [
+        TableModule,
+        ButtonModule,
+        DialogModule,
+        InputTextModule,
+        RouterLink,
+        CurrencyPipe,
+        DatePipe,
+        RouterLink,
+        CardModule,
+    ],
+    template: `<p-card>
     <ng-template pTemplate="header">
       <div class="p-card-title flex justify-between items-center p-5 pb-0 mb-0">
         Clientes
@@ -144,8 +143,8 @@ import { DashboardStore } from './stores/dashboard.store';
       </ng-template>
     </p-table>
   </p-card> `,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientsComponent {
   protected store = inject(DashboardStore);

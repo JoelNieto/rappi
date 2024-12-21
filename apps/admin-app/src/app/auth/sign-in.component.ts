@@ -20,17 +20,16 @@ import { markGroupAsDirty } from '../services/utils';
 import { AuthStore } from '../stores/auth.store';
 
 @Component({
-  selector: 'app-sign-in',
-  standalone: true,
-  imports: [
-    CardModule,
-    InputTextModule,
-    ButtonModule,
-    ReactiveFormsModule,
-    PasswordModule,
-    RouterLink,
-  ],
-  template: ` <form
+    selector: 'app-sign-in',
+    imports: [
+        CardModule,
+        InputTextModule,
+        ButtonModule,
+        ReactiveFormsModule,
+        PasswordModule,
+        RouterLink,
+    ],
+    template: ` <form
     [formGroup]="signInForm"
     (ngSubmit)="signIn()"
     class="h-svh flex justify-center items-center bg-slate-50"
@@ -76,8 +75,8 @@ import { AuthStore } from '../stores/auth.store';
       </div>
     </p-card>
   </form>`,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export default class SignInComponent {
   private auth = inject(AuthStore);

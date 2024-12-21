@@ -462,7 +462,27 @@ export class DocGeneratorsService {
                         color: '#333333',
                         fontSize: 9,
                         alignment: 'right',
-                        width: 100,
+                        width: 50,
+                      },
+                    ],
+                  },
+                  {
+                    columns: [
+                      {
+                        text: 'Fecha de pago',
+                        color: '#aaaaab',
+                        bold: true,
+                        width: '*',
+                        fontSize: 9,
+                        alignment: 'right',
+                      },
+                      {
+                        text: format(payment.payment_date, `dd/MM/yyyy`),
+                        bold: true,
+                        color: '#333333',
+                        fontSize: 9,
+                        alignment: 'right',
+                        width: 50,
                       },
                     ],
                   },

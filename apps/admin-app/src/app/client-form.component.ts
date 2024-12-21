@@ -35,21 +35,20 @@ import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-  selector: 'app-client-form',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    InputTextModule,
-    InputNumberModule,
-    ButtonModule,
-    CardModule,
-    FileUploadModule,
-    TableModule,
-    DatePipe,
-    CurrencyPipe,
-    RouterLink,
-  ],
-  template: `
+    selector: 'app-client-form',
+    imports: [
+        ReactiveFormsModule,
+        InputTextModule,
+        InputNumberModule,
+        ButtonModule,
+        CardModule,
+        FileUploadModule,
+        TableModule,
+        DatePipe,
+        CurrencyPipe,
+        RouterLink,
+    ],
+    template: `
     <p-card header="Datos del cliente">
       <form
         [formGroup]="form"
@@ -259,8 +258,8 @@ import { DashboardStore } from './stores/dashboard.store';
         </div></form
     ></p-card>
   `,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ClientFormComponent implements OnInit, OnDestroy {
   public clientId = input<string>();

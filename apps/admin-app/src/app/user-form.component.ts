@@ -18,10 +18,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-  selector: 'app-user-form',
-  standalone: true,
-  imports: [ReactiveFormsModule, InputTextModule, DropdownModule, ButtonModule],
-  template: `<form [formGroup]="form" class=" flex flex-col gap-4">
+    selector: 'app-user-form',
+    imports: [ReactiveFormsModule, InputTextModule, DropdownModule, ButtonModule],
+    template: `<form [formGroup]="form" class=" flex flex-col gap-4">
     <div class="input-group">
       <label for="full_name">Nombre</label>
       <input pInputText id="full_name" formControlName="full_name" />
@@ -49,8 +48,8 @@ import { DashboardStore } from './stores/dashboard.store';
       />
     </div>
   </form> `,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserFormComponent implements OnInit {
   private dialog = inject(DynamicDialogConfig);

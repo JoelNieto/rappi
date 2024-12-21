@@ -2,6 +2,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
 } from '@angular/core';
@@ -17,7 +18,6 @@ import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
   selector: 'app-loans',
-  standalone: true,
   imports: [
     ButtonModule,
     TableModule,
@@ -41,7 +41,7 @@ import { DashboardStore } from './stores/dashboard.store';
       </div>
     </ng-template>
     <p-table
-      [value]="store.loans()"
+      [value]="loans()"
       [paginator]="true"
       [rows]="10"
       styleClass="p-datatable-striped"
@@ -172,6 +172,7 @@ import { DashboardStore } from './stores/dashboard.store';
 export class LoansComponent implements OnInit {
   protected store = inject(DashboardStore);
   private filterService = inject(FilterService);
+  public loans = computed(() => [...this.store.loans()]);
 
   ngOnInit(): void {
     this.filterService.register(

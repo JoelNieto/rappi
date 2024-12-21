@@ -25,18 +25,17 @@ import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-  selector: 'app-payment-form',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    InputTextModule,
-    InputNumberModule,
-    ButtonModule,
-    DropdownModule,
-    CalendarModule,
-    FileUploadModule,
-  ],
-  template: ` <form [formGroup]="form" (ngSubmit)="saveChanges()">
+    selector: 'app-payment-form',
+    imports: [
+        ReactiveFormsModule,
+        InputTextModule,
+        InputNumberModule,
+        ButtonModule,
+        DropdownModule,
+        CalendarModule,
+        FileUploadModule,
+    ],
+    template: ` <form [formGroup]="form" (ngSubmit)="saveChanges()">
     <div class="grid md:grid-cols-2 gap-4">
       <div class="input-group">
         <label for="amount">Monto</label>
@@ -110,8 +109,8 @@ import { DashboardStore } from './stores/dashboard.store';
       />
     </div>
   </form>`,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentFormComponent implements OnInit {
   protected methods = [

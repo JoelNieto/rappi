@@ -19,16 +19,15 @@ import { markGroupAsDirty } from './services/utils';
 import { AuthStore } from './stores/auth.store';
 
 @Component({
-  selector: 'app-profile',
-  standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    CardModule,
-    InputTextModule,
-    ButtonModule,
-    PasswordModule,
-  ],
-  template: `
+    selector: 'app-profile',
+    imports: [
+        ReactiveFormsModule,
+        CardModule,
+        InputTextModule,
+        ButtonModule,
+        PasswordModule,
+    ],
+    template: `
     <form [formGroup]="form" (ngSubmit)="saveChanges()" class="mb-4">
       <p-card
         header=" Ajustes de perfil"
@@ -75,8 +74,8 @@ import { AuthStore } from './stores/auth.store';
       </div>
     </p-card>
   `,
-  styles: ``,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styles: ``,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfileComponent implements OnInit {
   private auth = inject(AuthStore);

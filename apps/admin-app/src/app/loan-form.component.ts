@@ -20,6 +20,7 @@ import { Installment, Recurrence } from '@rappi/models';
 import { addDays, addMonths, subDays } from 'date-fns';
 import { toDate } from 'date-fns-tz';
 import { MessageService } from 'primeng/api';
+import { Button } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
@@ -33,7 +34,6 @@ import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
   selector: 'app-loan-form',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     InputTextModule,
@@ -44,6 +44,7 @@ import { DashboardStore } from './stores/dashboard.store';
     CalendarModule,
     TableModule,
     DatePipe,
+    Button,
   ],
   template: `<h1>Nuevo prestamo</h1>
     <form
