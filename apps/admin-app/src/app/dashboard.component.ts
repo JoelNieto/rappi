@@ -58,7 +58,7 @@ import { PaymentsStore } from './stores/payments.store';
                 <a
                   routerLink="home"
                   routerLinkActive="selected"
-                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
+                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-emerald-50"
                   [ngClass]="{ 'px-0 justify-center': collapsed() }"
                   ><span class="pi pi-home"></span>
                   <span [class.hidden]="collapsed()"> Inicio </span>
@@ -68,7 +68,7 @@ import { PaymentsStore } from './stores/payments.store';
                 <a
                   routerLink="clients"
                   routerLinkActive="selected"
-                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
+                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-emerald-50"
                   [ngClass]="{ 'px-0 justify-center': collapsed() }"
                   ><span class="pi pi-users"></span>
                   <span [class.hidden]="collapsed()"> Clientes </span>
@@ -78,7 +78,7 @@ import { PaymentsStore } from './stores/payments.store';
                 <a
                   routerLink="loans"
                   routerLinkActive="selected"
-                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
+                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-emerald-50"
                   [ngClass]="{ 'px-0 justify-center': collapsed() }"
                   ><span class="pi pi-money-bill"></span>
                   <span [class.hidden]="collapsed()">Prestamos</span>
@@ -88,7 +88,7 @@ import { PaymentsStore } from './stores/payments.store';
                 <a
                   routerLink="payments"
                   routerLinkActive="selected"
-                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-blue-50"
+                  class="px-6 py-3 w-full flex items-center gap-2 rounded-lg text-slate-500 hover:bg-emerald-50"
                   [ngClass]="{ 'px-0 justify-center': collapsed() }"
                   ><span class="pi pi-credit-card"></span>
                   <span [class.hidden]="collapsed()">Pagos</span>
@@ -109,7 +109,7 @@ import { PaymentsStore } from './stores/payments.store';
   `,
   styles: `
     .selected {
-      @apply text-blue-700 font-semibold;
+      @apply text-emerald-700 font-semibold;
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

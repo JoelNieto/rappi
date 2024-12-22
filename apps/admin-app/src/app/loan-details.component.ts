@@ -32,24 +32,24 @@ import { FileUrlPipe } from './pipes/file-url.pipe';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-    selector: 'app-loan-details',
-    imports: [
-        SkeletonModule,
-        DatePipe,
-        CurrencyPipe,
-        TableModule,
-        ButtonModule,
-        RouterLink,
-        TabViewModule,
-        DropdownModule,
-        TagModule,
-        CardModule,
-        AsyncPipe,
-        FileUrlPipe,
-        FormsModule,
-    ],
-    providers: [DynamicDialogRef, DialogService],
-    template: `@if (store.loading()) {
+  selector: 'app-loan-details',
+  imports: [
+    SkeletonModule,
+    DatePipe,
+    CurrencyPipe,
+    TableModule,
+    ButtonModule,
+    RouterLink,
+    TabViewModule,
+    DropdownModule,
+    TagModule,
+    CardModule,
+    AsyncPipe,
+    FileUrlPipe,
+    FormsModule,
+  ],
+  providers: [DynamicDialogRef, DialogService],
+  template: `@if (store.loading()) {
       <p-card>
         <p-skeleton styleClass="mb-2" />
         <p-skeleton width="10rem" styleClass="mb-2" />
@@ -61,7 +61,7 @@ import { DashboardStore } from './stores/dashboard.store';
       @let loan = store.currentLoan();
 
       @if (loan) {
-        @let client = loan.client!;
+        @let client = loan.client;
         <p-card>
           <div class="flex flex-col md:flex-row items-center justify-between">
             <h1>Detalle de prestamo #{{ loan.id }}</h1>
@@ -92,9 +92,9 @@ import { DashboardStore } from './stores/dashboard.store';
           <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
               <h2 class="mb-1 font-normal text-slate-500">Cliente</h2>
-              <a class="link" routerLink="/clients/{{ client.id }}">
-                {{ client.first_name }}
-                {{ client.last_name }}
+              <a class="link" routerLink="/clients/{{ client?.id }}">
+                {{ client?.first_name }}
+                {{ client?.last_name }}
               </a>
             </div>
 
@@ -265,8 +265,8 @@ import { DashboardStore } from './stores/dashboard.store';
         </p-card>
       }
     } `,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoanDetailsComponent implements OnInit, OnDestroy {
   protected store = inject(DashboardStore);

@@ -298,6 +298,7 @@ export const DashboardStore = signalStore(
                 )
                 .eq('id', id)
                 .order('seq', { referencedTable: 'loan_installments' })
+                .order('payment_date', { referencedTable: 'loan_payments' })
                 .single(),
             ).pipe(
               map(({ data, error }) => {
