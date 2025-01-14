@@ -12,30 +12,30 @@ import {
 } from '@angular/forms';
 import { PaymentMethod } from '@rappi/models';
 import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
-import { DropdownModule } from 'primeng/dropdown';
+import { Button } from 'primeng/button';
+import { DatePicker } from 'primeng/datepicker';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
+import { FileUpload, FileUploadHandlerEvent } from 'primeng/fileupload';
+import { InputNumber } from 'primeng/inputnumber';
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
 import { v4 } from 'uuid';
 import { SupabaseService } from './services/supabase.service';
 import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-    selector: 'app-payment-form',
-    imports: [
-        ReactiveFormsModule,
-        InputTextModule,
-        InputNumberModule,
-        ButtonModule,
-        DropdownModule,
-        CalendarModule,
-        FileUploadModule,
-    ],
-    template: ` <form [formGroup]="form" (ngSubmit)="saveChanges()">
+  selector: 'app-payment-form',
+  imports: [
+    ReactiveFormsModule,
+    InputText,
+    InputNumber,
+    Button,
+    Select,
+    DatePicker,
+    FileUpload,
+  ],
+  template: ` <form [formGroup]="form" (ngSubmit)="saveChanges()">
     <div class="grid md:grid-cols-2 gap-4">
       <div class="input-group">
         <label for="amount">Monto</label>
@@ -58,7 +58,7 @@ import { DashboardStore } from './stores/dashboard.store';
       </div>
       <div class="input-group">
         <label for="payment_date">Fecha de pago</label>
-        <p-calendar
+        <p-datepicker
           id="payment_date"
           showIcon
           iconDisplay="input"
@@ -68,7 +68,7 @@ import { DashboardStore } from './stores/dashboard.store';
       </div>
       <div class="input-group">
         <label for="payment_method">Metodo de pago</label>
-        <p-dropdown
+        <p-select
           id="payment_method"
           formControlName="payment_method"
           appendTo="body"
@@ -109,8 +109,8 @@ import { DashboardStore } from './stores/dashboard.store';
       />
     </div>
   </form>`,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentFormComponent implements OnInit {
   protected methods = [

@@ -6,6 +6,7 @@ import {
   Session,
   SupabaseClient,
 } from '@supabase/supabase-js';
+
 @Injectable({
   providedIn: 'root',
 })

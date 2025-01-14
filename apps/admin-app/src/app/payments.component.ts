@@ -12,9 +12,9 @@ import { Client } from '@rappi/models';
 import { format } from 'date-fns';
 import { FilterService } from 'primeng/api';
 import { Button } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
-import { CardModule } from 'primeng/card';
-import { DropdownModule } from 'primeng/dropdown';
+import { Card } from 'primeng/card';
+import { DatePicker } from 'primeng/datepicker';
+import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { utils, writeFile } from 'xlsx';
 import { DashboardStore } from './stores/dashboard.store';
@@ -24,12 +24,12 @@ import { PaymentsStore } from './stores/payments.store';
   selector: 'app-payments',
   imports: [
     TableModule,
-    CalendarModule,
-    CardModule,
+    DatePicker,
+    Card,
     CurrencyPipe,
     DatePipe,
     FormsModule,
-    DropdownModule,
+    Select,
     RouterLink,
     Button,
   ],
@@ -37,7 +37,7 @@ import { PaymentsStore } from './stores/payments.store';
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div class="input-group">
         <label for="startDate">Filtro de fecha</label>
-        <p-calendar
+        <p-datepicker
           selectionMode="range"
           class="mb-2"
           [ngModel]="range"
@@ -47,7 +47,7 @@ import { PaymentsStore } from './stores/payments.store';
       </div>
       <div class="input-group">
         <label for="status">Vendedor</label>
-        <p-dropdown
+        <p-select
           placeholder="--Todos--"
           [options]="dashboard.users()"
           (onChange)="store.updateAgent($event.value)"
@@ -71,7 +71,7 @@ import { PaymentsStore } from './stores/payments.store';
     </div>
 
     <p-table [value]="payments()" [paginator]="true" [rows]="10">
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr>
           <th pSortableColumn="payment_date">
             Fecha <p-sortIcon field="payment_date" />
@@ -108,7 +108,7 @@ import { PaymentsStore } from './stores/payments.store';
           <th></th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-payment>
+      <ng-template #body let-payment>
         <tr>
           @let loan = payment.loan;
           @let client = loan.client;
@@ -128,7 +128,7 @@ import { PaymentsStore } from './stores/payments.store';
           <td>{{ payment.amount | currency }}</td>
         </tr>
       </ng-template>
-      <ng-template pTemplate="emptymessage">
+      <ng-template #emptymessage>
         <tr>
           <td colspan="5" class="text-center">Sin pagos registrados</td>
         </tr>

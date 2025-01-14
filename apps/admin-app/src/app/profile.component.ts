@@ -11,28 +11,21 @@ import {
   Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
+import { InputText } from 'primeng/inputtext';
+import { Password } from 'primeng/password';
 import { markGroupAsDirty } from './services/utils';
 import { AuthStore } from './stores/auth.store';
 
 @Component({
-    selector: 'app-profile',
-    imports: [
-        ReactiveFormsModule,
-        CardModule,
-        InputTextModule,
-        ButtonModule,
-        PasswordModule,
-    ],
-    template: `
+  selector: 'app-profile',
+  imports: [ReactiveFormsModule, Card, InputText, Button, Password],
+  template: `
     <form [formGroup]="form" (ngSubmit)="saveChanges()" class="mb-4">
-      <p-card
-        header=" Ajustes de perfil"
-        subheader="Actualice su informacion personal"
-      >
+      <p-card>
+        <ng-template #title>Ajustes de perfil</ng-template>
+        <ng-template #subtitle>Actualice su informacion personal</ng-template>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div class="input-group">
             <label for="full_name">Nombre completo</label>
@@ -53,14 +46,15 @@ import { AuthStore } from './stores/auth.store';
         </div>
       </p-card>
     </form>
-    <p-card header="Cambiar contraseña">
+    <p-card>
+      <ng-template #title>Cambiar contraseña</ng-template>
+      <ng-template #subtitle>Actualice una nueva contraseña</ng-template>
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <div class="input-group">
           <label for="password">Nueva contraseña</label>
           <p-password
             [formControl]="passwordControl"
             showTransitionOptions
-            showClear
             toggleMask
           />
         </div>
@@ -74,8 +68,8 @@ import { AuthStore } from './stores/auth.store';
       </div>
     </p-card>
   `,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent implements OnInit {
   private auth = inject(AuthStore);

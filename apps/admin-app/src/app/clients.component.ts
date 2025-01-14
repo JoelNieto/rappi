@@ -1,27 +1,25 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
-import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { DashboardStore } from './stores/dashboard.store';
 @Component({
-    selector: 'app-clients',
-    imports: [
-        TableModule,
-        ButtonModule,
-        DialogModule,
-        InputTextModule,
-        RouterLink,
-        CurrencyPipe,
-        DatePipe,
-        RouterLink,
-        CardModule,
-    ],
-    template: `<p-card>
-    <ng-template pTemplate="header">
+  selector: 'app-clients',
+  imports: [
+    TableModule,
+    Button,
+    DialogModule,
+    RouterLink,
+    CurrencyPipe,
+    DatePipe,
+    RouterLink,
+    Card,
+  ],
+  template: `<p-card>
+    <ng-template #header>
       <div class="p-card-title flex justify-between items-center p-5 pb-0 mb-0">
         Clientes
         <p-button
@@ -39,7 +37,7 @@ import { DashboardStore } from './stores/dashboard.store';
       [rowsPerPageOptions]="[5, 10, 20]"
       styleClass="p-datatable-striped"
     >
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr>
           <th pSortableColumn="full_name">
             Nombre <p-sortIcon field="full_name" />
@@ -111,7 +109,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <th></th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-client>
+      <ng-template #body let-client>
         <tr>
           <td>{{ client.full_name }}</td>
           <td>{{ client.document_id }}</td>
@@ -143,8 +141,8 @@ import { DashboardStore } from './stores/dashboard.store';
       </ng-template>
     </p-table>
   </p-card> `,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientsComponent {
   protected store = inject(DashboardStore);

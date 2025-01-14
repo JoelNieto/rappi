@@ -11,16 +11,16 @@ import {
   Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { Button } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { InputTextModule } from 'primeng/inputtext';
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-    selector: 'app-user-form',
-    imports: [ReactiveFormsModule, InputTextModule, DropdownModule, ButtonModule],
-    template: `<form [formGroup]="form" class=" flex flex-col gap-4">
+  selector: 'app-user-form',
+  imports: [ReactiveFormsModule, InputText, Select, Button],
+  template: `<form [formGroup]="form" class=" flex flex-col gap-4">
     <div class="input-group">
       <label for="full_name">Nombre</label>
       <input pInputText id="full_name" formControlName="full_name" />
@@ -31,7 +31,7 @@ import { DashboardStore } from './stores/dashboard.store';
     </div>
     <div class="input-group">
       <label for="role">Perfil</label>
-      <p-dropdown
+      <p-select
         id="role"
         formControlName="role"
         [options]="values"
@@ -40,16 +40,24 @@ import { DashboardStore } from './stores/dashboard.store';
         appendTo="body"
       />
     </div>
-    <div class="flex justify-end">
+    <div class="flex gap-2 justify-end">
+      <p-button
+        label="Cancelar"
+        [loading]="store.loading()"
+        severity="secondary"
+        (onClick)="dialogRef.close()"
+        icon="pi pi-times"
+      />
       <p-button
         label="Guardar"
         [loading]="store.loading()"
         (onClick)="updateUser()"
+        icon="pi pi-save"
       />
     </div>
   </form> `,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserFormComponent implements OnInit {
   private dialog = inject(DynamicDialogConfig);

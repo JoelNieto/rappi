@@ -18,14 +18,14 @@ import {
   PaymentMethod,
 } from '@rappi/models';
 import { isBefore } from 'date-fns';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DropdownModule } from 'primeng/dropdown';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { SkeletonModule } from 'primeng/skeleton';
+import { Select } from 'primeng/select';
+import { Skeleton } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
-import { TabViewModule } from 'primeng/tabview';
-import { TagModule } from 'primeng/tag';
+import { TabsModule } from 'primeng/tabs';
+import { Tag } from 'primeng/tag';
 import { DocGeneratorsService } from './doc-generators.service';
 import { PaymentFormComponent } from './payment-form.component';
 import { FileUrlPipe } from './pipes/file-url.pipe';
@@ -34,16 +34,16 @@ import { DashboardStore } from './stores/dashboard.store';
 @Component({
   selector: 'app-loan-details',
   imports: [
-    SkeletonModule,
+    Skeleton,
     DatePipe,
     CurrencyPipe,
     TableModule,
-    ButtonModule,
+    Button,
     RouterLink,
-    TabViewModule,
-    DropdownModule,
-    TagModule,
-    CardModule,
+    TabsModule,
+    Select,
+    Tag,
+    Card,
     AsyncPipe,
     FileUrlPipe,
     FormsModule,
@@ -124,7 +124,7 @@ import { DashboardStore } from './stores/dashboard.store';
             </div>
             <div class="input-group">
               <label for="user">Vendedor</label>
-              <p-dropdown
+              <p-select
                 [options]="store.users()"
                 [ngModel]="loan.created_by"
                 optionValue="id"
@@ -160,108 +160,114 @@ import { DashboardStore } from './stores/dashboard.store';
               </tr>
             </ng-template>
           </p-table>
-          <p-tabView>
-            <p-tabPanel header="Historial de pagos">
-              @if (loan.payments) {
+          <p-tabs value="0">
+            <p-tablist>
+              <p-tab value="0">Historial de pagos</p-tab>
+              <p-tab value="1">Cuotas</p-tab>
+            </p-tablist>
+            <p-tabpanels>
+              <p-tabpanel value="0">
+                @if (loan.payments) {
+                  <p-table
+                    [value]="loan.payments"
+                    styleClass="p-datatable-striped"
+                  >
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Fecha de pago</th>
+                        <th>Monto</th>
+                        <th>Referencia</th>
+                        <th>Metodo de pago</th>
+                        <th>Comprobante</th>
+                        <th></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-payment>
+                      <tr>
+                        <td>{{ payment.payment_date | date: 'mediumDate' }}</td>
+                        <td>{{ payment.amount | currency }}</td>
+                        <td>{{ payment.reference }}</td>
+                        <td>{{ payment.payment_method }}</td>
+                        <td
+                          [innerHTML]="
+                            payment.payment_proof_url | fileUrl | async
+                          "
+                        ></td>
+                        <td>
+                          <p-button
+                            text
+                            icon="pi pi-print"
+                            rounded
+                            (onClick)="generatePaymentReceipt(payment)"
+                          />
+                          <p-button
+                            text
+                            icon="pi pi-trash"
+                            rounded
+                            severity="danger"
+                            (onClick)="store.reversePayment(payment)"
+                          />
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="6" class="text-center">
+                          Sin pagos registrados
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                }
+              </p-tabpanel>
+              <p-tabpanel value="1">
                 <p-table
-                  [value]="loan.payments"
+                  [value]="loan.installments"
                   styleClass="p-datatable-striped"
                 >
                   <ng-template pTemplate="header">
                     <tr>
+                      <th>#</th>
                       <th>Fecha de pago</th>
                       <th>Monto</th>
-                      <th>Referencia</th>
-                      <th>Metodo de pago</th>
-                      <th>Comprobante</th>
-                      <th></th>
+                      <th>Pagado</th>
+                      <th>Saldo</th>
+                      <th>Estado</th>
                     </tr>
                   </ng-template>
-                  <ng-template pTemplate="body" let-payment>
+                  <ng-template pTemplate="body" let-installment>
+                    @let balance = installment.amount - installment.paid_amount;
                     <tr>
-                      <td>{{ payment.payment_date | date: 'mediumDate' }}</td>
-                      <td>{{ payment.amount | currency }}</td>
-                      <td>{{ payment.reference }}</td>
-                      <td>{{ payment.payment_method }}</td>
-                      <td
-                        [innerHTML]="
-                          payment.payment_proof_url | fileUrl | async
-                        "
-                      ></td>
+                      <td>{{ installment.seq }}</td>
+                      <td>{{ installment.due_date | date: 'mediumDate' }}</td>
+                      <td>{{ installment.amount | currency }}</td>
+                      <td>{{ installment.paid_amount | currency }}</td>
                       <td>
-                        <p-button
-                          text
-                          icon="pi pi-print"
-                          rounded
-                          (onClick)="generatePaymentReceipt(payment)"
-                        />
-                        <p-button
-                          text
-                          icon="pi pi-trash"
-                          rounded
-                          severity="danger"
-                          (onClick)="store.reversePayment(payment)"
-                        />
+                        {{ balance | currency }}
                       </td>
-                    </tr>
-                  </ng-template>
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="6" class="text-center">
-                        Sin pagos registrados
+                      <td>
+                        @switch (isDueDate(installment)) {
+                          @case (status.Paid) {
+                            <p-tag value="Pagado" severity="success" rounded />
+                          }
+                          @case (status.Pending) {
+                            <p-tag
+                              value="Pendiente"
+                              severity="secondary"
+                              rounded
+                            />
+                          }
+                          @case (status.Overdue) {
+                            <p-tag value="Vencido" severity="danger" rounded />
+                          }
+                        }
                       </td>
                     </tr>
                   </ng-template>
                 </p-table>
-              }
-            </p-tabPanel>
-            <p-tabPanel header="Cuotas">
-              <p-table
-                [value]="loan.installments"
-                styleClass="p-datatable-striped"
-              >
-                <ng-template pTemplate="header">
-                  <tr>
-                    <th>#</th>
-                    <th>Fecha de pago</th>
-                    <th>Monto</th>
-                    <th>Pagado</th>
-                    <th>Saldo</th>
-                    <th>Estado</th>
-                  </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-installment>
-                  @let balance = installment.amount - installment.paid_amount;
-                  <tr>
-                    <td>{{ installment.seq }}</td>
-                    <td>{{ installment.due_date | date: 'mediumDate' }}</td>
-                    <td>{{ installment.amount | currency }}</td>
-                    <td>{{ installment.paid_amount | currency }}</td>
-                    <td>
-                      {{ balance | currency }}
-                    </td>
-                    <td>
-                      @switch (isDueDate(installment)) {
-                        @case (status.Paid) {
-                          <p-tag value="Pagado" severity="success" rounded />
-                        }
-                        @case (status.Pending) {
-                          <p-tag
-                            value="Pendiente"
-                            severity="secondary"
-                            rounded
-                          />
-                        }
-                        @case (status.Overdue) {
-                          <p-tag value="Vencido" severity="danger" rounded />
-                        }
-                      }
-                    </td>
-                  </tr>
-                </ng-template>
-              </p-table>
-            </p-tabPanel>
-          </p-tabView>
+              </p-tabpanel>
+            </p-tabpanels>
+          </p-tabs>
         </p-card>
       }
     } `,

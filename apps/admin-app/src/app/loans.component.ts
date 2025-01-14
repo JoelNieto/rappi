@@ -10,26 +10,26 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Client } from '@rappi/models';
 import { FilterService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
+import { MultiSelect } from 'primeng/multiselect';
 import { TableModule } from 'primeng/table';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
   selector: 'app-loans',
   imports: [
-    ButtonModule,
+    Button,
     TableModule,
     RouterLink,
     DatePipe,
     CurrencyPipe,
-    CardModule,
-    MultiSelectModule,
+    Card,
+    MultiSelect,
     FormsModule,
   ],
   template: `<p-card>
-    <ng-template pTemplate="header">
+    <ng-template #title>
       <div class="p-card-title flex justify-between items-center p-5 pb-0 mb-0">
         Prestamos
         <p-button
@@ -48,7 +48,7 @@ import { DashboardStore } from './stores/dashboard.store';
       [rowsPerPageOptions]="[5, 10, 20]"
       [tableStyle]="{ 'min-width': '75rem' }"
     >
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr>
           <th pSortableColumn="id" style="width:22%">
             # <p-sortIcon field="id" />
@@ -130,7 +130,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <th></th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-loan>
+      <ng-template #body let-loan>
         <tr>
           <td>{{ loan.id }}</td>
           <td>{{ loan.commerce }}</td>

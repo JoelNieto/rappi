@@ -19,15 +19,11 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import {
-  FileUpload,
-  FileUploadHandlerEvent,
-  FileUploadModule,
-} from 'primeng/fileupload';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
+import { FileUpload, FileUploadHandlerEvent } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
+import { InputText } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { v4 } from 'uuid';
 import { SupabaseService } from './services/supabase.service';
@@ -35,21 +31,30 @@ import { markGroupAsDirty } from './services/utils';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-    selector: 'app-client-form',
-    imports: [
-        ReactiveFormsModule,
-        InputTextModule,
-        InputNumberModule,
-        ButtonModule,
-        CardModule,
-        FileUploadModule,
-        TableModule,
-        DatePipe,
-        CurrencyPipe,
-        RouterLink,
-    ],
-    template: `
-    <p-card header="Datos del cliente">
+  selector: 'app-client-form',
+  imports: [
+    ReactiveFormsModule,
+    InputText,
+    InputNumberModule,
+    Button,
+    Card,
+    FileUpload,
+    TableModule,
+    DatePipe,
+    CurrencyPipe,
+    RouterLink,
+  ],
+  template: `
+    <p-card>
+      <ng-template #title>Datos del cliente</ng-template>
+      <ng-template #subtitle>
+        @if (clientId()) {
+          <span>Editar</span>
+        } @else {
+          <span>Nuevo</span>
+        }
+        cliente
+      </ng-template>
       <form
         [formGroup]="form"
         (ngSubmit)="saveChanges()"
@@ -258,8 +263,8 @@ import { DashboardStore } from './stores/dashboard.store';
         </div></form
     ></p-card>
   `,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClientFormComponent implements OnInit, OnDestroy {
   public clientId = input<string>();

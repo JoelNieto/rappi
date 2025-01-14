@@ -221,7 +221,7 @@ export const DashboardStore = signalStore(
         try {
           const { data, error } = await supabase.client
             .from('loans')
-            .insert(omit(request, 'installments', 'products'))
+            .insert(omit({ obj: request, props: ['installments', 'products'] }))
             .select('*')
             .single();
           if (error) {

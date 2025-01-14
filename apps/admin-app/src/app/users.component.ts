@@ -1,17 +1,18 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Profile } from '@rappi/models';
 import { MessageService } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
+import { Button } from 'primeng/button';
+import { Card } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { InputTextModule } from 'primeng/inputtext';
+import { InputText } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { RolePipe } from './role.pipe';
 import { SupabaseService } from './services/supabase.service';
@@ -19,18 +20,22 @@ import { DashboardStore } from './stores/dashboard.store';
 import { UserFormComponent } from './user-form.component';
 
 @Component({
-    selector: 'app-users',
-    imports: [
-        CardModule,
-        TableModule,
-        RolePipe,
-        ButtonModule,
-        DialogModule,
-        InputTextModule,
-        ReactiveFormsModule,
-    ],
-    providers: [DynamicDialogRef, DialogService],
-    template: `<p-card header="Usuario" subheader="Administracion de accesos">
+  selector: 'app-users',
+  imports: [
+    Card,
+    TableModule,
+    RolePipe,
+    Button,
+    DialogModule,
+    InputText,
+    ReactiveFormsModule,
+  ],
+  providers: [DynamicDialogRef, DialogService],
+  template: `<p-card>
+      <ng-template #title>Usuarios</ng-template>
+      <ng-template #subtitle
+        >Administre los usuarios de la aplicacion</ng-template
+      >
       <div class="flex justify-end">
         <p-button
           label="Invitar usuario"
@@ -52,7 +57,7 @@ import { UserFormComponent } from './user-form.component';
             <th pSortableColumn="username">
               Email <p-sortIcon field="username" />
             </th>
-            <th pSortableColumn="role">Perfil<p-sortIcon field="role" /></th>
+            <th pSortableColumn="role">Perfil <p-sortIcon field="role" /></th>
             <th></th>
           </tr>
         </ng-template>
@@ -107,8 +112,8 @@ import { UserFormComponent } from './user-form.component';
         />
       </div>
     </p-dialog> `,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent {
   protected loading = signal(false);
@@ -117,7 +122,7 @@ export class UsersComponent {
   private supabase = inject(SupabaseService);
   protected store = inject(DashboardStore);
   private dialogService = inject(DialogService);
-  protected users = this.store.users;
+  protected users = computed(() => [...this.store.users()]);
 
   protected inviteEmailControl = new FormControl('', {
     validators: [Validators.required, Validators.email],

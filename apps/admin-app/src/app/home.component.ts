@@ -1,18 +1,20 @@
 import { CurrencyPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CardModule } from 'primeng/card';
+import { Card } from 'primeng/card';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({
-    selector: 'app-home',
-    imports: [CardModule, CurrencyPipe],
-    template: `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <p-card header="# Prestamos">
+  selector: 'app-home',
+  imports: [Card, CurrencyPipe],
+  template: `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <p-card>
+      <ng-template #title> # Prestamos </ng-template>
       <div class="text-2xl font-semibold text-slate-700">
         {{ store.loansCount() }}
       </div>
     </p-card>
-    <p-card header="Total prestado">
+    <p-card>
+      <ng-template #title>Total prestado</ng-template>
       <div class="flex justify-between">
         <div class="text-2xl font-semibold text-slate-700">
           {{ store.loansSum() | currency }}
@@ -20,7 +22,8 @@ import { DashboardStore } from './stores/dashboard.store';
         <span class="pi pi-money-bill text-3xl "></span>
       </div>
     </p-card>
-    <p-card header="Total adeudado">
+    <p-card>
+      <ng-template #title>Total adeudado</ng-template>
       <div class="flex justify-between">
         <div class="text-2xl font-semibold text-slate-700">
           {{ store.debtSum() | currency }}
@@ -29,8 +32,8 @@ import { DashboardStore } from './stores/dashboard.store';
       </div>
     </p-card>
   </div>`,
-    styles: ``,
-    changeDetection: ChangeDetectionStrategy.OnPush
+  styles: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
   protected store = inject(DashboardStore);

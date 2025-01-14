@@ -21,11 +21,11 @@ import { addDays, addMonths, subDays } from 'date-fns';
 import { toDate } from 'date-fns-tz';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
-import { CardModule } from 'primeng/card';
-import { DropdownModule } from 'primeng/dropdown';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
+import { Card } from 'primeng/card';
+import { DatePicker } from 'primeng/datepicker';
+import { InputNumber } from 'primeng/inputnumber';
+import { InputText } from 'primeng/inputtext';
+import { Select } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { map } from 'rxjs';
 import { v4 } from 'uuid';
@@ -36,12 +36,12 @@ import { DashboardStore } from './stores/dashboard.store';
   selector: 'app-loan-form',
   imports: [
     ReactiveFormsModule,
-    InputTextModule,
-    DropdownModule,
-    InputNumberModule,
-    CardModule,
+    InputText,
+    Select,
+    InputNumber,
+    Card,
     CurrencyPipe,
-    CalendarModule,
+    DatePicker,
     TableModule,
     DatePipe,
     Button,
@@ -52,11 +52,10 @@ import { DashboardStore } from './stores/dashboard.store';
       [formGroup]="form"
       (ngSubmit)="saveChanges()"
     >
-      <p-card subheader="Ingrese los datos del prestamo">
-        <ng-template pTemplate="header">
-          <div
-            class="p-card-title flex justify-between items-center p-5 pb-0 mb-0"
-          >
+      <p-card>
+        <ng-template #subtitle>Ingrese los datos del prestamo</ng-template>
+        <ng-template #title>
+          <div class="p-card-title flex justify-between items-center">
             Datos del prestamo
             <p-button label="Guardar" type="submit" icon="pi pi-save" />
           </div>
@@ -64,7 +63,7 @@ import { DashboardStore } from './stores/dashboard.store';
         <div [formGroup]="form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="input-group">
             <label for="client">Cliente</label>
-            <p-dropdown
+            <p-select
               formControlName="client_id"
               [options]="store.clientsList()"
               [filter]="true"
@@ -73,7 +72,7 @@ import { DashboardStore } from './stores/dashboard.store';
               optionValue="id"
               placeholder="Seleccione un cliente"
             >
-              <ng-template pTemplate="selectedItem" let-selected>
+              <ng-template #selectedItem let-selected>
                 @if (selected) {
                   <div class="flex items-center justify-between">
                     <div>
@@ -85,15 +84,15 @@ import { DashboardStore } from './stores/dashboard.store';
                   </div>
                 }
               </ng-template>
-              <ng-template pTemplate="item" let-client>
-                <div class="flex items-center justify-between">
+              <ng-template #item let-client>
+                <div class="flex items-center justify-between w-full">
                   <div>{{ client.full_name }}</div>
                   <div class="text-sm text-slate-500">
                     {{ client.document_id }}
                   </div>
                 </div>
               </ng-template>
-            </p-dropdown>
+            </p-select>
           </div>
 
           <div class="input-group">
@@ -111,7 +110,7 @@ import { DashboardStore } from './stores/dashboard.store';
           </div>
           <div class="input-group">
             <label for="recurrence">Recurrencia</label>
-            <p-dropdown
+            <p-select
               formControlName="recurrence_id"
               [options]="recurrences"
               optionLabel="label"
@@ -127,7 +126,7 @@ import { DashboardStore } from './stores/dashboard.store';
           </div>
           <div class="input-group">
             <label for="first_payment_date">Fecha de pago inicial</label>
-            <p-calendar
+            <p-datepicker
               formControlName="first_payment_date"
               id="first_payment_date"
               appendTo="body"
@@ -136,7 +135,7 @@ import { DashboardStore } from './stores/dashboard.store';
           <div formArrayName="products" class="col-span-2">
             <h2 class="mb-0">Productos</h2>
             <p-table [value]="products.controls">
-              <ng-template pTemplate="header">
+              <ng-template #header>
                 <tr>
                   <th>Cantidad</th>
                   <th>Producto</th>
@@ -147,7 +146,7 @@ import { DashboardStore } from './stores/dashboard.store';
                 </tr>
               </ng-template>
               <ng-template
-                pTemplate="body"
+                #body
                 let-product
                 let-i="rowIndex"
                 let-editing="editing"
@@ -261,8 +260,8 @@ import { DashboardStore } from './stores/dashboard.store';
           </div>
         </div>
       </p-card>
-      <p-card header="Terminos del prestamo">
-        <div class="flex justify-end"></div>
+      <p-card>
+        <ng-template #title>Terminos del prestamo</ng-template>
         <div class="grid grid-cols-4">
           <div class="input-group">
             <label>Total a financiar</label>
