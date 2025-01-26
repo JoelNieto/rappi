@@ -13,6 +13,7 @@ import {
   withViewTransitions,
 } from '@angular/router';
 import Aura from '@primeng/themes/aura';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { providePrimeNG } from 'primeng/config';
 import es from '../../public/i18n/es.json';
 import { appRoutes } from './app.routes';
@@ -21,6 +22,7 @@ registerLocaleData(localeEs, 'es-US');
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    provideCharts(withDefaultRegisterables()),
     provideRouter(
       appRoutes,
       withViewTransitions(),
