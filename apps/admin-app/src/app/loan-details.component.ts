@@ -26,9 +26,9 @@ import { Skeleton } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
 import { Tag } from 'primeng/tag';
-import { DocGeneratorsService } from './doc-generators.service';
 import { PaymentFormComponent } from './payment-form.component';
 import { FileUrlPipe } from './pipes/file-url.pipe';
+import { DocGeneratorsService } from './services/doc-generators.service';
 import { DashboardStore } from './stores/dashboard.store';
 
 @Component({

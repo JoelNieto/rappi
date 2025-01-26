@@ -8,6 +8,7 @@ import {
   Recurrence,
 } from '@rappi/models';
 import { format, isBefore } from 'date-fns';
+import { toDate } from 'date-fns-tz';
 import { es } from 'date-fns/locale';
 import * as pdfMake from 'pdfmake/build/pdfmake.js';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
@@ -402,23 +403,40 @@ export class DocGeneratorsService {
       .open();
   }
 
-  isDueDate(installment: Installment) {
+  isDueDate({
+    installment,
+    paymentDate,
+  }: {
+    installment: Installment;
+    paymentDate?: Date;
+  }) {
     if (installment.paid_amount === installment.amount) {
       return InstallmentStatus.Paid;
     }
 
-    if (isBefore(new Date(), installment.due_date)) {
+    if (isBefore(paymentDate ?? new Date(), installment.due_date)) {
       return InstallmentStatus.Pending;
     }
     return InstallmentStatus.Overdue;
   }
 
   printPaymentReceipt(payment: Payment, loan?: Loan) {
+    payment = {
+      ...payment,
+      payment_date: toDate(payment.payment_date, {
+        timeZone: 'America/Panama',
+      }),
+    };
+    console.log({ payment });
+
     const currency = new CurrencyPipe('es-US', 'USD');
     loan = loan ?? payment.loan;
     const overDueAmount = loan?.installments.reduce(
       (acc: number, installment: Installment) => {
-        if (this.isDueDate(installment) === InstallmentStatus.Overdue) {
+        if (
+          this.isDueDate({ installment, paymentDate: payment.payment_date }) ===
+          InstallmentStatus.Overdue
+        ) {
           return acc + installment.amount - installment.paid_amount;
         }
         return acc;

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DocGeneratorsService } from './doc-generators.service';
+import { DocGeneratorsService } from './services/doc-generators.service';
 
 describe('DocGeneratorsService', () => {
   let service: DocGeneratorsService;
