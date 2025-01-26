@@ -70,7 +70,7 @@ import { PaymentsStore } from './stores/payments.store';
       </div>
     </div>
 
-    <p-table [value]="payments()" [paginator]="true" [rows]="10">
+    <p-table [value]="payments()" paginator [rows]="10">
       <ng-template #header>
         <tr>
           <th pSortableColumn="payment_date">

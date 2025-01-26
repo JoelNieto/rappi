@@ -1,5 +1,10 @@
 import { CurrencyPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { Card } from 'primeng/card';
 import { DashboardStore } from './stores/dashboard.store';
 
@@ -35,6 +40,10 @@ import { DashboardStore } from './stores/dashboard.store';
   styles: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   protected store = inject(DashboardStore);
+
+  ngOnInit(): void {
+    this.store.fetchMonthlyPayments();
+  }
 }

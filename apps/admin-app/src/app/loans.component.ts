@@ -132,7 +132,9 @@ import { DashboardStore } from './stores/dashboard.store';
       </ng-template>
       <ng-template #body let-loan>
         <tr>
-          <td>{{ loan.id }}</td>
+          <td>
+            <a routerLink="{{ loan.id }}" class="link">{{ loan.id }} </a>
+          </td>
           <td>{{ loan.commerce }}</td>
           <td>
             <a routerLink="/clients/{{ loan.client?.id }}" class="pill"

@@ -18,6 +18,13 @@
 @layer tw-base {
 }
 
+body
+  :not(.p-overlay):not(.p-datepicker-panel):not(.p-menu-overlay):not(
+    .p-column-filter-overlay
+  ) {
+  @apply transition-all duration-300 ease-in-out;
+}
+
 html,
 body {
   height: 100%;

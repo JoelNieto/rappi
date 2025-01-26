@@ -31,6 +31,7 @@ type State = {
   loading: boolean;
   currentLoan: Loan | null;
   selectedLoanId: number | null;
+  monthlyPayments: any[];
 };
 
 export const initialState: State = {
@@ -41,6 +42,7 @@ export const initialState: State = {
   loading: false,
   currentLoan: null,
   selectedLoanId: null,
+  monthlyPayments: [],
 };
 
 export const DashboardStore = signalStore(
@@ -108,6 +110,20 @@ export const DashboardStore = signalStore(
           return;
         }
         patchState(state, { selectedClient: data, loading: false });
+      }
+
+      async function fetchMonthlyPayments() {
+        patchState(state, { loading: true });
+        const { data, error } = await supabase.client
+          .from('payments_monthly_summary')
+          .select('*')
+          .order('month', { ascending: true });
+        if (error) {
+          console.error(error);
+          patchState(state, { loading: false });
+          return;
+        }
+        patchState(state, { monthlyPayments: data, loading: false });
       }
 
       async function fetchLoans() {
@@ -625,6 +641,7 @@ export const DashboardStore = signalStore(
         deleteUser,
         reversePayment,
         updateLoanAssignee,
+        fetchMonthlyPayments,
       };
     },
   ),
