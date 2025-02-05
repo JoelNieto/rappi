@@ -4,7 +4,7 @@ import localeEs from '@angular/common/locales/es-US';
 import {
   ApplicationConfig,
   LOCALE_ID,
-  provideZoneChangeDetection,
+  provideExperimentalZonelessChangeDetection,
 } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
@@ -21,7 +21,7 @@ registerLocaleData(localeEs, 'es-US');
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideExperimentalZonelessChangeDetection(),
     provideCharts(withDefaultRegisterables()),
     provideRouter(
       appRoutes,
