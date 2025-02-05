@@ -29,17 +29,8 @@ import { DashboardStore } from './stores/dashboard.store';
     FormsModule,
   ],
   template: `<p-card>
-    <ng-template #title>
-      <div class="p-card-title flex justify-between items-center p-5 pb-0 mb-0">
-        Prestamos
-        <p-button
-          type="button"
-          label="Nuevo"
-          icon="pi pi-plus"
-          routerLink="new"
-        />
-      </div>
-    </ng-template>
+    <ng-template #title> Prestamos </ng-template>
+    <ng-template #subtitle> Listado de prestamos </ng-template>
     <p-table
       [value]="loans()"
       [paginator]="true"
@@ -48,6 +39,16 @@ import { DashboardStore } from './stores/dashboard.store';
       [rowsPerPageOptions]="[5, 10, 20]"
       [tableStyle]="{ 'min-width': '75rem' }"
     >
+      <ng-template #caption>
+        <div class="flex w-full justify-end items-center">
+          <p-button
+            type="button"
+            label="Nuevo"
+            icon="pi pi-plus"
+            routerLink="new"
+          />
+        </div>
+      </ng-template>
       <ng-template #header>
         <tr>
           <th pSortableColumn="id" style="width:22%">

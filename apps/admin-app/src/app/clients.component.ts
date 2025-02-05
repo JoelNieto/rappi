@@ -19,17 +19,8 @@ import { DashboardStore } from './stores/dashboard.store';
     Card,
   ],
   template: `<p-card>
-    <ng-template #header>
-      <div class="p-card-title flex justify-between items-center p-5 pb-0 mb-0">
-        Clientes
-        <p-button
-          type="button"
-          label="Nuevo"
-          icon="pi pi-plus"
-          routerLink="new"
-        />
-      </div>
-    </ng-template>
+    <ng-template #title> Clientes </ng-template>
+    <ng-template #subtitle> Listado de clientes </ng-template>
     <p-table
       [value]="store.clientsList()"
       [paginator]="true"
@@ -37,6 +28,16 @@ import { DashboardStore } from './stores/dashboard.store';
       [rowsPerPageOptions]="[5, 10, 20]"
       styleClass="p-datatable-striped"
     >
+      <ng-template #caption>
+        <div class="flex w-full justify-end items-center">
+          <p-button
+            type="button"
+            label="Nuevo"
+            icon="pi pi-plus"
+            routerLink="new"
+          />
+        </div>
+      </ng-template>
       <ng-template #header>
         <tr>
           <th pSortableColumn="full_name">
