@@ -234,10 +234,11 @@ export const DashboardStore = signalStore(
 
       async function createLoan(request: Partial<Loan>) {
         patchState(state, { loading: true });
+        const req = omit(request, 'installments', 'products');
         try {
           const { data, error } = await supabase.client
             .from('loans')
-            .insert(omit({ obj: request, props: ['installments', 'products'] }))
+            .insert(req)
             .select('*')
             .single();
           if (error) {
