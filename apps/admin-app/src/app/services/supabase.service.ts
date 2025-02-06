@@ -29,7 +29,6 @@ export class SupabaseService {
 
   get session() {
     this.client.auth.getSession().then(({ data }) => {
-      console.log(data);
       this._session = data.session;
     });
     return this._session;
@@ -90,7 +89,6 @@ export class SupabaseService {
   }
 
   resetPassword(email: string) {
-    console.log(process.env['SUPABASE_REDIRECT_URI']);
     return this.client.auth.resetPasswordForEmail(email, {
       redirectTo: `${process.env['SUPABASE_REDIRECT_URI']}/change-password`,
     });

@@ -497,7 +497,7 @@ export const DashboardStore = signalStore(
         const paidInstallments: Partial<Installment>[] = [];
 
         while (amount > 0 && installments.length > 0) {
-          const current = installments[0];
+          const current = { ...installments[0] };
           const remaining = current.amount - current.paid_amount;
           const paid = Math.min(amount, remaining);
 
@@ -539,7 +539,7 @@ export const DashboardStore = signalStore(
         }
       }
 
-      async function reversePayment(payment: Partial<Payment>) {
+      async function reversePayment(payment: Payment) {
         confirmationService.confirm({
           message: '¿Está seguro de revertir este pago?',
           header: 'Confirmación',
@@ -557,11 +557,11 @@ export const DashboardStore = signalStore(
             const installments = loan.installments
               .filter((x) => x.paid_amount > 0)
               .sort((a, b) => b.seq - a.seq);
-            let amount = payment.amount!;
+            let { amount } = payment;
             const reversedInstallments: Partial<Installment>[] = [];
 
             while (amount > 0 && installments.length > 0) {
-              const current = installments[0];
+              const current = { ...installments[0] };
               const paid = Math.min(amount, current.paid_amount);
 
               amount -= paid;
@@ -575,7 +575,7 @@ export const DashboardStore = signalStore(
               await savePaidInstallments(reversedInstallments);
               const { error } = await supabase.client
                 .from('loans')
-                .update({ balance: loan.balance + amount })
+                .update({ balance: loan.balance + payment.amount })
                 .eq('id', loan.id);
               if (error) {
                 throw error;

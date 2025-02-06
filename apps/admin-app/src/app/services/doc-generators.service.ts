@@ -427,8 +427,6 @@ export class DocGeneratorsService {
         timeZone: 'America/Panama',
       }),
     };
-    console.log({ payment });
-
     const currency = new CurrencyPipe('es-US', 'USD');
     loan = loan ?? payment.loan;
     const overDueAmount = loan?.installments.reduce(

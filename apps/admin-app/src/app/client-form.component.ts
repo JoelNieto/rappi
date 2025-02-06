@@ -343,7 +343,6 @@ export class ClientFormComponent implements OnInit, OnDestroy {
           documents.map((d) => d.path),
         );
         links?.length && this.fileLinks.set(links);
-        console.log('Links', links);
       }
     }
   }
@@ -369,11 +368,7 @@ export class ClientFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.store
-      .saveClient(this.form.getRawValue(), this.newFilePaths())
-      .then((value) => {
-        console.log('Client saved', value);
-      });
+    this.store.saveClient(this.form.getRawValue(), this.newFilePaths());
   }
 
   async onUpload(event: FileUploadHandlerEvent) {
