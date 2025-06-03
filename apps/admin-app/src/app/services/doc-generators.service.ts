@@ -164,7 +164,7 @@ export class DocGeneratorsService {
         {
           columns: [
             {
-              text: 'TEL: 6893-9853',
+              text: 'TEL: 6390-7519',
               style: 'invoiceBillingAddress',
             },
             {
