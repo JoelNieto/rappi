@@ -184,7 +184,7 @@ import { DashboardStore } from './stores/dashboard.store';
                     </ng-template>
                     <ng-template pTemplate="body" let-payment>
                       <tr>
-                        <td>{{ payment.payment_date | date: 'mediumDate' }}</td>
+                        <td>{{ payment.payment_date | date: 'dd/MM/yyyy' }}</td>
                         <td>{{ payment.amount | currency }}</td>
                         <td>{{ payment.reference }}</td>
                         <td>{{ payment.payment_method }}</td>
@@ -239,7 +239,7 @@ import { DashboardStore } from './stores/dashboard.store';
                     @let balance = installment.amount - installment.paid_amount;
                     <tr>
                       <td>{{ installment.seq }}</td>
-                      <td>{{ installment.due_date | date: 'mediumDate' }}</td>
+                      <td>{{ installment.due_date | date: 'dd/MM/yyyy' }}</td>
                       <td>{{ installment.amount | currency }}</td>
                       <td>{{ installment.paid_amount | currency }}</td>
                       <td>
@@ -322,7 +322,7 @@ export class LoanDetailsComponent implements OnInit, OnDestroy {
         '960px': '75vw',
         '640px': '90vw',
       },
-    });
+    })!;
   }
 
   ngOnDestroy(): void {

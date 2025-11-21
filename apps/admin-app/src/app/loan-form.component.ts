@@ -160,7 +160,7 @@ import { DashboardStore } from './stores/dashboard.store';
                       <ng-template pTemplate="input">
                         <p-inputNumber
                           [formControl]="product.controls.quantity"
-                          min="1"
+                          [min]="1"
                         />
                       </ng-template>
                       <ng-template pTemplate="output">

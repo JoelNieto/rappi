@@ -4,16 +4,16 @@ import localeEs from '@angular/common/locales/es-US';
 import {
   ApplicationConfig,
   LOCALE_ID,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
   provideRouter,
   withComponentInputBinding,
   withViewTransitions,
 } from '@angular/router';
-import Aura from '@primeng/themes/aura';
+import Aura from '@primeuix/themes/aura';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import es from '../../public/i18n/es.json';
 import { appRoutes } from './app.routes';
@@ -21,14 +21,14 @@ registerLocaleData(localeEs, 'es-US');
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideCharts(withDefaultRegisterables()),
+    provideAnimationsAsync(),
     provideRouter(
       appRoutes,
       withViewTransitions(),
       withComponentInputBinding(),
     ),
-    provideAnimationsAsync(),
     providePrimeNG({
       theme: {
         preset: Aura,
